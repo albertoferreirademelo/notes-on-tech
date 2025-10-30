@@ -1,27 +1,33 @@
 ---
-title: "Hello, Warm Tech"
-description: "Opening the notebook with a reflection on warmth, curiosity, and living with technology in Sweden."
-pubDate: 2025-01-12
+title: "Hello world, and friends!"
+description: "Sharing why I started this blog and how I plan to explore AI, data, and design through small, honest experiments."
+pubDate: 2025-10-30
 tags:
   - welcome
-  - warm-tech
+  - warm_tech
   - sweden
+  - first_post
 ---
 
-Welcome to **Notes on Tech, AI, and Life in Sweden**.
+<p align="center">
+  <img src="/blog/251030_hello_world/fmd_coffee.png"
+       alt="A warm cup of coffee"
+       style="max-width:600px; width:100%; border-radius:12px; margin:1.5rem auto; display:block;" />
+</p>
 
-This site is intentionally light and handcrafted. No dashboards, no complex CMS — just markdown files, a curious mind,
-and a warm cup of coffee.
 
-## Why warm tech?
+### Welcome — and thanks for stopping by.
 
-I believe technology can feel welcoming. Something you’re glad to return to. Warm tech is thoughtful about pacing,
-friction, and the humans on the other side of the screen.
+This site is my small corner of the internet. No dashboards, no pop-ups, no noise. Just markdown, curiosity, and the occasional cup of coffee.
 
-## What to expect
+### Why did I create this blog
 
-- Short essays about machine intelligence and creative tooling.
-- Experiments with prototypes, sensors, and analog workflows.
-- Observations from everyday Swedish life.
+I work with AI and data every day, and I always think that it would be great to help people on their AI journey and also how can I make AI more human?  
+I also have thousands ideas and projects that would be fun to share.
 
-Thanks for reading — more soon.
+### What you’ll find here
+
+Notes on data, AI, and design, mixed with experiments, side projects, and a few thoughts from everyday life.  
+Some posts will be technical, others just reflections on life.
+
+Thanks for reading. Let’s see where this goes.

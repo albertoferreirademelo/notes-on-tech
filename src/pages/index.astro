@@ -7,14 +7,14 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('posts')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()).slice(0, 3);
 ---
-<Layout title="Notes on Tech, AI, and Life in Sweden" description="A warm-tech journal exploring technology, artificial intelligence, and everyday life in Sweden.">
+<Layout title="Notes on Tech, AI, and Life" description="A warm-tech journal exploring technology, artificial intelligence, and everyday life.">
   <SiteHeader />
   <main>
     <section class="hero card">
       <p class="eyebrow">Welcome</p>
-      <h1>Notes on tech, AI, and life in Sweden.</h1>
+      <h1>Notes on tech, AI, and life.</h1>
       <p class="intro">
-        I’m Alberto Ferreira de Melo — curious technologist, thoughtful tinkerer, and mindful observer of life in Scandinavia.
+        I’m Alberto Ferreira de Melo — curious technologist, thoughtful tinkerer, and mindful observer of life.
         This is my warm corner of the internet where experiments, field notes, and stories come together.
       </p>
       <a class="cta" href="/blog">Read the latest notes →</a>
