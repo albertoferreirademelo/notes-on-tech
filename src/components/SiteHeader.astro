@@ -1,0 +1,106 @@
+---
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
+];
+---
+<header aria-label="Primary">
+  <div class="shell">
+    <a class="logo" href="/" aria-label="Alberto Ferreira de Melo home">
+      <span class="logo-mark">FdM</span>
+      <span class="logo-text">Alberto Ferreira de Melo</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <ul>
+        {links.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(16px);
+    background: rgba(27, 27, 27, 0.85);
+    border-bottom: 1px solid rgba(255, 179, 71, 0.15);
+  }
+
+  .shell {
+    width: min(100%, var(--max-width));
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: inherit;
+    font-weight: 600;
+  }
+
+  .logo-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 179, 71, 0.2);
+    color: var(--color-accent);
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+  }
+
+  .logo-text {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav a {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-md);
+    transition: background var(--transition), color var(--transition);
+  }
+
+  nav a:hover,
+  nav a:focus-visible {
+    background: rgba(255, 179, 71, 0.18);
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 720px) {
+    .shell {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    nav ul {
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+  }
+</style>

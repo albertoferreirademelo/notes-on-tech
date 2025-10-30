@@ -1,0 +1,208 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('posts')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags ?? []))).sort();
+---
+<Layout title="Blog | Notes on Tech, AI, and Life in Sweden" description="All essays, field notes, and reflections from Alberto Ferreira de Melo.">
+  <SiteHeader />
+  <main>
+    <section>
+      <div class="intro card">
+        <h1>Writing & Field Notes</h1>
+        <p>
+          Explorations in machine intelligence, humane tooling, and the everyday rhythm of Sweden.
+          Search or filter to find what resonates today.
+        </p>
+        <label class="search">
+          <span class="sr-only">Search blog posts</span>
+          <input id="post-search" type="search" placeholder="Search by title or tag..." />
+        </label>
+        {uniqueTags.length > 0 && (
+          <div class="tag-filter" role="list" aria-label="Available tags">
+            {uniqueTags.map((tag) => (
+              <button type="button" class="tag" data-tag={tag}>{tag}</button>
+            ))}
+            <button type="button" class="tag clear" data-tag="">Clear</button>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <div class="posts">
+        {allPosts.map((post) => (
+          <article
+            class="card post"
+            data-title={post.data.title.toLowerCase()}
+            data-tags={(post.data.tags ?? []).map((tag) => tag.toLowerCase()).join(' ')}
+          >
+            <header>
+              <p class="meta">{post.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+              <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
+            </header>
+            <p>{post.data.description}</p>
+            {post.data.tags && post.data.tags.length > 0 && (
+              <ul class="tags">
+                {post.data.tags.map((tag) => (
+                  <li class="tag">{tag}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+      <p class="empty" hidden>No posts match your search yet — try another keyword or clear the filters.</p>
+    </section>
+  </main>
+  <SiteFooter />
+</Layout>
+
+<script is:inline>
+  const searchInput = document.getElementById('post-search');
+  const tagButtons = Array.from(document.querySelectorAll('.tag-filter button'));
+  const posts = Array.from(document.querySelectorAll('.posts .post'));
+  const emptyState = document.querySelector('.empty');
+  let activeTag = '';
+
+  function applyFilters() {
+    const query = (searchInput?.value ?? '').toLowerCase().trim();
+    let visibleCount = 0;
+
+    posts.forEach((post) => {
+      const title = post.dataset.title ?? '';
+      const tags = post.dataset.tags ?? '';
+      const matchesQuery = !query || title.includes(query) || tags.includes(query);
+      const matchesTag = !activeTag || tags.includes(activeTag.toLowerCase());
+      const isVisible = matchesQuery && matchesTag;
+      post.hidden = !isVisible;
+      if (isVisible) visibleCount += 1;
+    });
+
+    if (emptyState) {
+      emptyState.hidden = visibleCount !== 0;
+    }
+  }
+
+  searchInput?.addEventListener('input', () => {
+    activeTag = '';
+    tagButtons.forEach((btn) => btn.classList.remove('active'));
+    applyFilters();
+  });
+
+  tagButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!button.dataset.tag) {
+        activeTag = '';
+        tagButtons.forEach((btn) => btn.classList.remove('active'));
+      } else {
+        activeTag = button.dataset.tag;
+        tagButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
+      }
+      if (searchInput) {
+        searchInput.value = '';
+      }
+      applyFilters();
+    });
+  });
+</script>
+
+<style>
+  h1,
+  h2 {
+    font-family: var(--font-serif);
+  }
+
+  .intro {
+    display: grid;
+    gap: 1.5rem;
+    background: linear-gradient(140deg, rgba(255, 179, 71, 0.18), transparent 55%);
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+
+  .search {
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  .tag-filter {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .tag-filter .tag {
+    background: rgba(255, 179, 71, 0.15);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color var(--transition), transform var(--transition);
+  }
+
+  .tag-filter .tag:hover,
+  .tag-filter .tag:focus-visible,
+  .tag-filter .tag.active {
+    border-color: rgba(255, 179, 71, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .tag-filter .clear {
+    background: rgba(255, 179, 71, 0.05);
+    color: var(--color-text-muted);
+  }
+
+  .posts {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .post {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .post p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .meta {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex-wrap: wrap;
+  }
+
+  .empty {
+    margin-top: 2rem;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+</style>

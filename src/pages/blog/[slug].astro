@@ -1,0 +1,145 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { data } = post;
+const { Content } = await post.render();
+const currentTags = data.tags ?? [];
+const relatedPosts = (await getCollection('posts'))
+  .filter((entry) => entry.slug !== post.slug)
+  .filter((entry) => currentTags.length === 0 || entry.data.tags?.some((tag) => currentTags.includes(tag)))
+  .slice(0, 3);
+---
+<Layout title={`${data.title} | Notes on Tech`} description={data.description}>
+  <SiteHeader />
+  <main>
+    <article class="post card">
+      <header>
+        <p class="meta">{data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+        <h1>{data.title}</h1>
+        {data.tags && data.tags.length > 0 && (
+          <ul class="tags">
+            {data.tags.map((tag) => (
+              <li class="tag">{tag}</li>
+            ))}
+          </ul>
+        )}
+      </header>
+      <div class="content">
+        <Content />
+      </div>
+    </article>
+
+    {relatedPosts.length > 0 && (
+      <section aria-labelledby="related-posts">
+        <div class="related card">
+          <h2 id="related-posts">More to explore</h2>
+          <ul>
+            {relatedPosts.map((related) => (
+              <li>
+                <a href={`/blog/${related.slug}/`}>{related.data.title}</a>
+                <span>{related.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+  </main>
+  <SiteFooter />
+</Layout>
+
+<style>
+  .post {
+    margin-top: 3rem;
+    padding: clamp(1.5rem, 5vw, 3rem);
+    display: grid;
+    gap: 2rem;
+    background: linear-gradient(160deg, rgba(255, 179, 71, 0.18), transparent 60%);
+  }
+
+  .meta {
+    margin: 0;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.75rem;
+  }
+
+  h1 {
+    margin: 0.5rem 0 1rem;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw + 1rem, 3rem);
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .content :global(p) {
+    margin-bottom: 1.35rem;
+    color: var(--color-text-muted);
+  }
+
+  .content :global(h2),
+  .content :global(h3),
+  .content :global(h4) {
+    font-family: var(--font-serif);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .content :global(blockquote) {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    border-left: 3px solid var(--color-accent);
+    background: rgba(255, 179, 71, 0.08);
+    border-radius: var(--radius-md);
+    font-style: italic;
+  }
+
+  .related {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .related li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    color: var(--color-text-muted);
+  }
+
+  .related span {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 600px) {
+    .related li {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
