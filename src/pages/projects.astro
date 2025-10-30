@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const projects = [
+  {
+    title: 'Warm Interfaces for AI Tools',
+    description: 'Experimenting with tactile feedback loops and humane prompts for day-to-day machine learning work.',
+    href: '#'
+  },
+  {
+    title: 'Nordic Weather Journal',
+    description: 'A playful visualization of Swedish weather patterns blended with mood and photography notes.',
+    href: '#'
+  },
+  {
+    title: 'Analog Meets Digital',
+    description: 'Exploring how to sync handwritten field notes with an open source knowledge graph.',
+    href: '#'
+  }
+];
+---
+<Layout title="Projects | Notes on Tech" description="Selected experiments and tinkering by Alberto Ferreira de Melo.">
+  <SiteHeader />
+  <main>
+    <section>
+      <div class="intro card">
+        <h1>Projects & Experiments</h1>
+        <p>
+          A living gallery of prototypes, collaborations, and ongoing explorations. Each project leans into warmth,
+          curiosity, and thoughtful craft.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="grid">
+        {projects.map((project) => (
+          <ProjectCard {...project} />
+        ))}
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</Layout>
+
+<style>
+  h1 {
+    font-family: var(--font-serif);
+  }
+
+  .intro {
+    display: grid;
+    gap: 1.5rem;
+    background: linear-gradient(150deg, rgba(255, 179, 71, 0.18), transparent 60%);
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 55ch;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+</style>

@@ -1,0 +1,52 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href?: string;
+  image?: string;
+}
+
+const { title, description, href, image } = Astro.props;
+---
+<article class="card project-card">
+  {image && (
+    <div class="image-wrapper">
+      <img src={image} alt="" loading="lazy" />
+    </div>
+  )}
+  <div class="content">
+    <h3>{href ? <a href={href}>{title}</a> : title}</h3>
+    <p>{description}</p>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .image-wrapper {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255, 179, 71, 0.18);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+</style>

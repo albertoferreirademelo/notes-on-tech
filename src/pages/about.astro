@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+<Layout title="About | Notes on Tech" description="Learn about Alberto Ferreira de Melo and the story behind Notes on Tech.">
+  <SiteHeader />
+  <main>
+    <article class="card bio">
+      <h1>About Alberto</h1>
+      <p>
+        I’m a technologist and writer exploring how warm, human-centered design can make advanced technology feel more
+        like a companion than a tool. After relocating to Sweden, I began capturing stories about the interplay between
+        AI research, creative practice, and everyday Nordic life.
+      </p>
+      <p>
+        This space is intentionally simple — a notebook for essays, prototypes, and reflections. Expect a mix of
+        hands-on experiments, thoughtful commentary, and snapshots of life in Scandinavia.
+      </p>
+      <p>
+        When I’m not writing, you’ll find me sketching interface ideas, testing new ML models, or cycling along the
+        Swedish archipelago.
+      </p>
+    </article>
+  </main>
+  <SiteFooter />
+</Layout>
+
+<style>
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw + 1rem, 3rem);
+    margin: 0 0 1.5rem;
+  }
+
+  .bio {
+    margin-top: 3.5rem;
+    display: grid;
+    gap: 1.25rem;
+    background: linear-gradient(145deg, rgba(255, 179, 71, 0.18), transparent 60%);
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+</style>
