@@ -1,0 +1,245 @@
+---
+import { getCollection } from 'astro:content';
+import PersonalLayout from '../../layouts/PersonalLayout.astro';
+
+// Drop a new markdown file in src/content/notes to add another note to this archive.
+const notes = (await getCollection('notes')).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+
+const notesByYear = new Map<number, typeof notes>();
+for (const note of notes) {
+  const year = note.data.pubDate.getFullYear();
+  const yearNotes = notesByYear.get(year) ?? [];
+  notesByYear.set(year, [...yearNotes, note]);
+}
+
+const years = Array.from(notesByYear.keys()).sort((a, b) => b - a);
+
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
+---
+<PersonalLayout title="Notes archive | Alberto Ferreira de Melo" description="All notes, experiments, and reflections in one place.">
+  <section class="intro card">
+    <h1>Notes archive</h1>
+    <p>
+      Everything I’m thinking about right now — from AI experiments to Swedish study notes. Use the search box to filter by title
+      or description in real time.
+    </p>
+    <label class="search">
+      <span class="sr-only">Search notes</span>
+      <input id="note-search" type="search" placeholder="Search notes" autocomplete="off" />
+    </label>
+  </section>
+
+  <section aria-labelledby="note-list" class="stack">
+    <h2 id="note-list">Browse every note</h2>
+    {years.length > 0 ? (
+      <div class="notes" data-notes>
+        {years.map((year) => (
+          <section class="year-group" data-year={year}>
+            <h3>{year}</h3>
+            <ul>
+              {(notesByYear.get(year) ?? []).map((note) => {
+                const formattedDate = note.data.pubDate.toLocaleDateString('en-GB', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                });
+                const language = (note.data.lang ?? 'en').toUpperCase();
+                return (
+                  <li
+                    data-title={note.data.title.toLowerCase()}
+                    data-description={note.data.description.toLowerCase()}
+                  >
+                    <a href={withBase(`/notes/${note.slug}/`)}>
+                      <p class="note-meta">
+                        <span>{formattedDate}</span>
+                        <span class="note-lang">{language}</span>
+                      </p>
+                      <h4>{note.data.title}</h4>
+                      <p>{note.data.description}</p>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+    ) : (
+      <p class="notes-empty" data-role="static">Notes will appear here once I publish the first one.</p>
+    )}
+    <p class="notes-empty" data-role="search" hidden>
+      No notes match your search just yet — try another phrase.
+    </p>
+  </section>
+</PersonalLayout>
+
+<script is:inline>
+  const searchInput = document.getElementById('note-search');
+  const groups = Array.from(document.querySelectorAll('.year-group'));
+  const emptyState = document.querySelector('.notes-empty[data-role="search"]');
+
+  if (groups.length === 0) {
+    searchInput?.setAttribute('disabled', 'true');
+    searchInput?.setAttribute('placeholder', 'Notes coming soon');
+  }
+
+  function applyFilter() {
+    const query = (searchInput?.value ?? '').toLowerCase().trim();
+    let visibleItems = 0;
+
+    groups.forEach((group) => {
+      const items = Array.from(group.querySelectorAll('li'));
+      let groupVisible = 0;
+
+      items.forEach((item) => {
+        const title = item.dataset.title ?? '';
+        const description = item.dataset.description ?? '';
+        const matches = !query || title.includes(query) || description.includes(query);
+        item.hidden = !matches;
+        if (matches) {
+          groupVisible += 1;
+          visibleItems += 1;
+        }
+      });
+
+      group.toggleAttribute('hidden', groupVisible === 0);
+    });
+
+    emptyState?.toggleAttribute('hidden', visibleItems !== 0);
+  }
+
+  if (groups.length > 0) {
+    searchInput?.addEventListener('input', applyFilter);
+  }
+</script>
+
+<style>
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-serif);
+  }
+
+  .intro {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+
+  .search {
+    display: block;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+  input[type='search'] {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: #1b1b1b;
+    color: var(--color-text);
+  }
+
+  input[type='search']:focus {
+    outline: none;
+    border-color: rgba(76, 183, 181, 0.45);
+    box-shadow: 0 0 0 3px rgba(76, 183, 181, 0.2);
+  }
+
+  .stack {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .notes {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .year-group h3 {
+    margin: 0 0 1rem;
+    font-size: 1.3rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  li {
+    background: #1b1b1b;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--transition), transform var(--transition);
+  }
+
+  li:hover,
+  li:focus-within {
+    border-color: rgba(76, 183, 181, 0.35);
+    transform: translateY(-2px);
+  }
+
+  a {
+    display: grid;
+    gap: 0.55rem;
+    padding: 1.25rem 1.4rem;
+    color: inherit;
+  }
+
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .note-lang {
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  li p:last-child {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .notes-empty {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+</style>

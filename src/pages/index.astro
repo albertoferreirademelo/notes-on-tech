@@ -1,56 +1,30 @@
 ---
+import { getCollection } from 'astro:content';
 import PersonalLayout from '../layouts/PersonalLayout.astro';
 import NoteList from '../components/NoteList.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { getCollection } from 'astro:content';
 
-// Notes live in src/content/posts/. Each Markdown file becomes a note that
-// automatically appears here once draft is set to false (or omitted).
-const latestNotes = (await getCollection('posts'))
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
-  .slice(0, 4);
+// Add new markdown entries in src/content/notes and src/content/projects to populate the sections below.
+const allNotes = (await getCollection('notes')).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+const latestNotes = allNotes.slice(0, 3);
 
-// Update this list whenever a project or experiment needs a spotlight.
-// Link to posts, standalone pages, or external prototypes.
-const projects = [
-  {
-    title: 'Warm tech journal',
-    description: 'A living log of how AI, data, and design overlap in my day-to-day experiments.',
-    href: '/blog/hello-world/',
-  },
-  {
-    title: 'Everyday datasets',
-    description: 'Collecting small, humane datasets from daily routines to test more mindful machine learning ideas.',
-  },
-  {
-    title: 'Spatial notes',
-    description: 'Sketching with lidar scans and 3D prints to understand places — from Stockholm tunnels to tiny home layouts.',
-  },
-];
+const allProjects = (await getCollection('projects')).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+const latestProjects = allProjects.slice(0, 3);
 
-// Quick scratchpad thoughts — keep them brief, exploratory, and human.
-const roughThoughts = [
-  {
-    text: 'Wondering how to teach Swedish idioms to small language models without sanding off their charm.',
-    language: 'en',
-  },
-  {
-    text: 'Experimenterar med att skriva dagliga promptloggar på svenska för att se hur tonen förändras över tid.',
-    language: 'sv',
-  },
-  {
-    text: 'Notebook idea: map curiosity across projects each week to spot neglected threads.',
-    language: 'en',
-  },
-];
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
 ---
 <PersonalLayout title="Alberto Ferreira de Melo" description="Thoughts, experiments, and notes on technology and life.">
   <section class="intro card">
     <h2>Hej, I’m Alberto.</h2>
     <p>
-      This is my digital notebook — a calm space for the projects, prompts, and questions that keep me curious.
-      You’ll find ongoing AI experiments, design sketches, small datasets, and the occasional Swedish reflection.
+      This is my digital notebook — a calm space for the projects, prompts, and questions that keep me curious. Everything
+      you see here comes from simple markdown files so publishing stays light.
     </p>
     <p>
       I keep several threads open at once. Some become essays, others stay rough edges — all of them show the work in progress.
@@ -60,36 +34,32 @@ const roughThoughts = [
   <section aria-labelledby="latest-notes" class="stack">
     <div class="section-heading">
       <h2 id="latest-notes">Latest notes</h2>
-      <a href="/notes" class="section-link">See all notes</a>
+      <a href={withBase('/notes')} class="section-link">See all notes</a>
     </div>
-    <NoteList notes={latestNotes} />
+    {latestNotes.length > 0 ? (
+      <NoteList notes={latestNotes} />
+    ) : (
+      <p class="empty">Notes will appear here as soon as I publish the first one.</p>
+    )}
+    {allNotes.length === 1 && <p class="empty">More notes coming soon.</p>}
   </section>
 
   <section aria-labelledby="projects" class="stack">
     <div class="section-heading">
       <h2 id="projects">Projects &amp; experiments</h2>
-      <p class="section-subtitle">Ways I tinker between technology, design, and data.</p>
+      <p class="section-subtitle">Three fresh snapshots from the workshop table.</p>
     </div>
-    <div class="project-grid">
-      {projects.map((project) => (
-        <ProjectCard {...project} />
-      ))}
-    </div>
-  </section>
-
-  <section aria-labelledby="rough-thoughts" class="stack">
-    <div class="section-heading">
-      <h2 id="rough-thoughts">Rough thoughts</h2>
-      <p class="section-subtitle">Unpolished drafts, bilingual musings, and prompts to chase later.</p>
-    </div>
-    <ul class="thoughts">
-      {roughThoughts.map((thought) => (
-        <li>
-          <span class="thought-language">{thought.language.toUpperCase()}</span>
-          <p>{thought.text}</p>
-        </li>
-      ))}
-    </ul>
+    {latestProjects.length > 0 ? (
+      <div class="project-grid">
+        {latestProjects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    ) : (
+      <p class="empty">
+        Projects &amp; experiments will appear here as I publish them.
+      </p>
+    )}
   </section>
 </PersonalLayout>
 
@@ -141,32 +111,9 @@ const roughThoughts = [
     grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   }
 
-  .thoughts {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 1rem;
-  }
-
-  .thoughts li {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 1.1rem 1.3rem;
-    display: grid;
-    gap: 0.45rem;
-  }
-
-  .thought-language {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-  }
-
-  .thoughts p {
+  .empty {
     margin: 0;
     color: var(--color-text-muted);
+    font-style: italic;
   }
 </style>
