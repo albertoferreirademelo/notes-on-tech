@@ -2,6 +2,7 @@
 title: "Hello world, and friends!"
 description: "Sharing why I started this blog and how I plan to explore AI, data, and design through small, honest experiments."
 pubDate: 2025-10-30
+language: en
 tags:
   - welcome
   - warm_tech

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 export async function GET() {
   const posts = (await getCollection('posts')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
-  const site = new URL(import.meta.env.SITE ?? 'https://notesontech.example');
+  const site = new URL(import.meta.env.SITE ?? 'https://albertoferreirademelo.example');
 
   const items = posts
     .filter((post) => !post.data.draft)
@@ -23,9 +23,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <rss version="2.0">
     <channel>
-      <title>Notes on Tech, AI, and Life in Sweden</title>
+      <title>Alberto Ferreira de Melo</title>
       <link>${site.href}</link>
-      <description>Notes, experiments, and reflections by Alberto Ferreira de Melo.</description>
+      <description>Thoughts, experiments, and notes on technology and life.</description>
       ${items}
     </channel>
   </rss>`;

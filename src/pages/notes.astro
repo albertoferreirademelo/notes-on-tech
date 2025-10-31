@@ -1,0 +1,52 @@
+---
+import PersonalLayout from '../layouts/PersonalLayout.astro';
+import NoteList from '../components/NoteList.astro';
+import { getCollection } from 'astro:content';
+
+// This page surfaces every note from src/content/posts/ in reverse chronological order.
+const notes = (await getCollection('posts'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+<PersonalLayout title="Notes archive | Alberto Ferreira de Melo" description="All notes, experiments, and reflections in one place.">
+  <section class="intro card">
+    <h1>Notes archive</h1>
+    <p>
+      Everything I’m thinking about right now — from AI experiments to Swedish study notes. Language markers help you scan for
+      English or Swedish entries quickly.
+    </p>
+  </section>
+
+  <section aria-labelledby="note-list" class="stack">
+    <h2 id="note-list">Browse every note</h2>
+    <NoteList notes={notes} showLanguage />
+  </section>
+</PersonalLayout>
+
+<style>
+  h1,
+  h2 {
+    font-family: var(--font-serif);
+  }
+
+  .intro {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+
+  .stack {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .stack h2 {
+    margin: 0;
+    font-size: 1.45rem;
+  }
+</style>

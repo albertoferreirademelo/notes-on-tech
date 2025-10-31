@@ -1,70 +1,67 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import SiteHeader from '../../components/SiteHeader.astro';
-import SiteFooter from '../../components/SiteFooter.astro';
+import PersonalLayout from '../../layouts/PersonalLayout.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = (await getCollection('posts')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags ?? []))).sort();
 ---
-<Layout title="Blog | Notes on Tech, AI, and Life in Sweden" description="All essays, field notes, and reflections from Alberto Ferreira de Melo.">
-  <SiteHeader />
-  <main>
-    <section>
-      <div class="intro card">
-        <h1>Writing & Field Notes</h1>
-        <p>
-          Explorations in machine intelligence, humane tooling, and the everyday rhythm of Sweden.
-          Search or filter to find what resonates today.
-        </p>
-        <label class="search">
-          <span class="sr-only">Search blog posts</span>
-          <input id="post-search" type="search" placeholder="Search by title or tag..." />
-        </label>
-        {uniqueTags.length > 0 && (
-          <div class="tag-filter" role="list" aria-label="Available tags">
-            {uniqueTags.map((tag) => (
-              <button type="button" class="tag" data-tag={tag}>{tag}</button>
-            ))}
-            <button type="button" class="tag clear" data-tag="">Clear</button>
-          </div>
-        )}
-      </div>
-    </section>
-
-    <section aria-live="polite">
-      <div class="posts">
-        {allPosts.map((post) => (
-          <article
-            class="card post"
-            data-title={post.data.title.toLowerCase()}
-            data-tags={(post.data.tags ?? []).map((tag) => tag.toLowerCase()).join(' ')}
-          >
-            <header>
-              <p class="meta">{post.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-              <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
-            </header>
-            <p>{post.data.description}</p>
-            {post.data.tags && post.data.tags.length > 0 && (
-              <ul class="tags">
-                {post.data.tags.map((tag) => (
-                  <li class="tag">{tag}</li>
-                ))}
-              </ul>
-            )}
-          </article>
+<PersonalLayout title="Notes | Alberto Ferreira de Melo" description="All notes, essays, and field sketches from Alberto Ferreira de Melo.">
+  <section class="intro card">
+    <h1>All notes</h1>
+    <p>
+      Essays, field sketches, and learning logs about technology, AI, and everyday experiments. Use the quick filter to
+      jump to what you need.
+    </p>
+    <label class="search">
+      <span class="sr-only">Search notes</span>
+      <input id="post-search" type="search" placeholder="Search by title or tag" />
+    </label>
+    {uniqueTags.length > 0 && (
+      <div class="tag-filter" role="list" aria-label="Available tags">
+        {uniqueTags.map((tag) => (
+          <button type="button" class="tag" data-tag={tag}>{tag}</button>
         ))}
+        <button type="button" class="tag clear" data-tag="">Clear</button>
       </div>
-      <p class="empty" hidden>No posts match your search yet — try another keyword or clear the filters.</p>
-    </section>
-  </main>
-  <SiteFooter />
-</Layout>
+    )}
+  </section>
+
+  <section aria-live="polite">
+    <div class="posts">
+      {allPosts.map((post) => (
+        <article
+          class="post-card"
+          data-title={post.data.title.toLowerCase()}
+          data-tags={(post.data.tags ?? []).map((tag) => tag.toLowerCase()).join(' ')}
+        >
+          <header>
+            <p class="meta">
+              <time dateTime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </time>
+              <span class="language">{(post.data.language ?? 'en').toUpperCase()}</span>
+            </p>
+            <h2><a href={`/blog/${post.slug}/`}>{post.data.title}</a></h2>
+          </header>
+          <p>{post.data.description}</p>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <ul class="tags">
+              {post.data.tags.map((tag) => (
+                <li class="tag">{tag}</li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))}
+    </div>
+    <p class="empty" hidden>No notes match your search yet — try another keyword or clear the filters.</p>
+  </section>
+</PersonalLayout>
 
 <script is:inline>
   const searchInput = document.getElementById('post-search');
   const tagButtons = Array.from(document.querySelectorAll('.tag-filter button'));
-  const posts = Array.from(document.querySelectorAll('.posts .post'));
+  const posts = Array.from(document.querySelectorAll('.posts .post-card'));
   const emptyState = document.querySelector('.empty');
   let activeTag = '';
 
@@ -118,8 +115,7 @@ const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags 
 
   .intro {
     display: grid;
-    gap: 1.5rem;
-    background: linear-gradient(140deg, rgba(255, 179, 71, 0.18), transparent 55%);
+    gap: 1.25rem;
   }
 
   .intro p {
@@ -143,6 +139,21 @@ const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags 
     border: 0;
   }
 
+  input[type='search'] {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-muted);
+    color: var(--color-text);
+  }
+
+  input[type='search']:focus {
+    outline: none;
+    border-color: rgba(76, 183, 181, 0.45);
+    box-shadow: 0 0 0 3px rgba(76, 183, 181, 0.2);
+  }
+
   .tag-filter {
     display: flex;
     gap: 0.75rem;
@@ -150,45 +161,66 @@ const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags 
   }
 
   .tag-filter .tag {
-    background: rgba(255, 179, 71, 0.15);
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
     cursor: pointer;
     border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     transition: border-color var(--transition), transform var(--transition);
   }
 
   .tag-filter .tag:hover,
   .tag-filter .tag:focus-visible,
   .tag-filter .tag.active {
-    border-color: rgba(255, 179, 71, 0.35);
+    border-color: rgba(76, 183, 181, 0.45);
     transform: translateY(-2px);
   }
 
   .tag-filter .clear {
-    background: rgba(255, 179, 71, 0.05);
+    background: rgba(255, 255, 255, 0.04);
     color: var(--color-text-muted);
   }
 
   .posts {
     display: grid;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
-  .post {
+  .post-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
     display: grid;
-    gap: 1rem;
+    gap: 0.85rem;
+    box-shadow: var(--shadow-soft);
   }
 
-  .post p {
+  .post-card p {
     margin: 0;
     color: var(--color-text-muted);
   }
 
   .meta {
     margin: 0;
-    color: var(--color-text-muted);
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+
+  .language {
+    background: rgba(76, 183, 181, 0.16);
+    color: var(--color-accent);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
   }
 
   .tags {
@@ -198,6 +230,16 @@ const uniqueTags = Array.from(new Set(allPosts.flatMap((post) => post.data.tags 
     padding: 0;
     list-style: none;
     flex-wrap: wrap;
+  }
+
+  .tags .tag {
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .empty {
