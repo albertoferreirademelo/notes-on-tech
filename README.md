@@ -1,43 +1,31 @@
-# Astro Starter Kit: Minimal
+# ferreirademelo.com
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Personal site and digital notebook of **Alberto Ferreira de Melo**
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+---
 
-## 🚀 Project Structure
+## 🪶 About
 
-Inside of your Astro project, you'll see the following folders and files:
+This site is built to hold ideas in progress — the things that sit between “thinking” and “making.”  
+It’s a mix of notes, small experiments, and occasional essays.
 
-```text
+- **Framework:** [Astro](https://astro.build)
+- **Styling:** Custom dark theme (no UI library)
+- **Content:** Markdown files powered by [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/)
+- **Hosting:** GitHub Pages → soon moving to [ferreirademelo.com](https://ferreirademelo.com)
+
+---
+
+## 📂 Structure
+
+```bash
 /
-├── public/
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+│   ├── content/
+│   │   ├── notes/        # markdown posts
+│   │   └── projects/     # markdown project cards
+│   ├── layouts/          # base and page layouts
+│   ├── pages/            # index, notes, projects, about
+│   └── styles/           # theme.css and utilities
+└── public/
+    └── blog/             # images and other static assets
