@@ -1,7 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import SiteHeader from '../../components/SiteHeader.astro';
-import SiteFooter from '../../components/SiteFooter.astro';
+import PersonalLayout from '../../layouts/PersonalLayout.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -18,64 +16,80 @@ const relatedPosts = (await getCollection('posts'))
   .filter((entry) => currentTags.length === 0 || entry.data.tags?.some((tag) => currentTags.includes(tag)))
   .slice(0, 3);
 ---
-<Layout title={`${data.title} | Notes on Tech`} description={data.description}>
-  <SiteHeader />
-  <main>
-    <article class="post card">
-      <header>
-        <p class="meta">{data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-        <h1>{data.title}</h1>
-        {data.tags && data.tags.length > 0 && (
-          <ul class="tags">
-            {data.tags.map((tag) => (
-              <li class="tag">{tag}</li>
-            ))}
-          </ul>
-        )}
-      </header>
-      <div class="content">
-        <Content />
-      </div>
-    </article>
+<PersonalLayout title={`${data.title} | Alberto Ferreira de Melo`} description={data.description}>
+  <article class="post">
+    <header class="post-header">
+      <p class="meta">
+        <time dateTime={data.pubDate.toISOString()}>
+          {data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </time>
+        <span class="language">{(data.language ?? 'en').toUpperCase()}</span>
+      </p>
+      <h1>{data.title}</h1>
+      {data.tags && data.tags.length > 0 && (
+        <ul class="tags">
+          {data.tags.map((tag) => (
+            <li class="tag">{tag}</li>
+          ))}
+        </ul>
+      )}
+    </header>
+    <div class="content">
+      <Content />
+    </div>
+  </article>
 
-    {relatedPosts.length > 0 && (
-      <section aria-labelledby="related-posts">
-        <div class="related card">
-          <h2 id="related-posts">More to explore</h2>
-          <ul>
-            {relatedPosts.map((related) => (
-              <li>
-                <a href={`/blog/${related.slug}/`}>{related.data.title}</a>
-                <span>{related.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    )}
-  </main>
-  <SiteFooter />
-</Layout>
+  {relatedPosts.length > 0 && (
+    <section aria-labelledby="related-posts" class="related">
+      <h2 id="related-posts">More to explore</h2>
+      <ul>
+        {relatedPosts.map((related) => (
+          <li>
+            <a href={`/blog/${related.slug}/`}>{related.data.title}</a>
+            <span>{related.data.pubDate.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</PersonalLayout>
 
 <style>
   .post {
-    margin-top: 3rem;
-    padding: clamp(1.5rem, 5vw, 3rem);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(1.5rem, 4vw, 3rem);
     display: grid;
-    gap: 2rem;
-    background: linear-gradient(160deg, rgba(255, 179, 71, 0.18), transparent 60%);
+    gap: 1.75rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .post-header {
+    display: grid;
+    gap: 0.75rem;
   }
 
   .meta {
     margin: 0;
-    color: var(--color-text-muted);
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .language {
+    background: rgba(76, 183, 181, 0.16);
+    color: var(--color-accent);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
   }
 
   h1 {
-    margin: 0.5rem 0 1rem;
+    margin: 0;
     font-family: var(--font-serif);
     font-size: clamp(2rem, 4vw + 1rem, 3rem);
   }
@@ -86,10 +100,21 @@ const relatedPosts = (await getCollection('posts'))
     margin: 0;
     padding: 0;
     list-style: none;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
   }
 
   .content :global(p) {
-    margin-bottom: 1.35rem;
+    margin-bottom: 1.4rem;
     color: var(--color-text-muted);
   }
 
@@ -99,20 +124,32 @@ const relatedPosts = (await getCollection('posts'))
     font-family: var(--font-serif);
     margin-top: 2.5rem;
     margin-bottom: 1rem;
+    color: var(--color-text);
   }
 
   .content :global(blockquote) {
-    margin: 2rem 0;
+    margin: 2.5rem 0;
     padding: 1.5rem 2rem;
     border-left: 3px solid var(--color-accent);
-    background: rgba(255, 179, 71, 0.08);
+    background: rgba(76, 183, 181, 0.1);
     border-radius: var(--radius-md);
     font-style: italic;
   }
 
   .related {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
     display: grid;
-    gap: 1.25rem;
+    gap: 1.1rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .related h2 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
   }
 
   .related ul {
@@ -120,23 +157,23 @@ const relatedPosts = (await getCollection('posts'))
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 0.85rem;
+    gap: 0.8rem;
   }
 
   .related li {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
     gap: 1rem;
     color: var(--color-text-muted);
+    font-size: 0.9rem;
   }
 
   .related span {
-    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
     color: var(--color-text-muted);
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     .related li {
       flex-direction: column;
       align-items: flex-start;

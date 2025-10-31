@@ -1,0 +1,153 @@
+---
+const {
+  title = 'Alberto Ferreira de Melo',
+  description = 'Thoughts, experiments, and notes on technology and life.',
+  plausibleDomain = '',
+} = Astro.props;
+
+const navLinks = [
+  { href: '/', label: 'Start' },
+  { href: '/notes', label: 'Notes' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/about', label: 'About' },
+  { href: '/rss.xml', label: 'RSS' },
+];
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/theme.css" />
+    {plausibleDomain && (
+      <script
+        is:inline
+        defer
+        data-domain={plausibleDomain}
+        src="https://plausible.io/js/script.js"
+      ></script>
+    )}
+  </head>
+  <body>
+    <div class="site">
+      <header class="site-header">
+        <p class="site-note">Personal site. Opinions and drafts — not my employer.</p>
+        <a class="site-title" href="/">Alberto Ferreira de Melo</a>
+        <p class="site-subtitle">Thoughts, experiments, and notes on technology and life.</p>
+        <nav aria-label="Site navigation">
+          <ul>
+            {navLinks.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
+      <main class="site-main">
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <p>© {new Date().getFullYear()} Alberto Ferreira de Melo — always a work in progress.</p>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  .site {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.25rem 3.5rem;
+    color: var(--color-text);
+  }
+
+  .site-header {
+    width: min(100%, 50rem);
+    display: grid;
+    gap: 0.85rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .site-note {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .site-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw + 1rem, 3.2rem);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .site-subtitle {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1.25rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    padding: 0.35rem 0.5rem;
+    border-radius: 999px;
+    transition: background var(--transition), color var(--transition);
+  }
+
+  nav a:hover,
+  nav a:focus-visible {
+    color: var(--color-text);
+    background: rgba(76, 183, 181, 0.12);
+  }
+
+  .site-main {
+    width: min(100%, 50rem);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .site-footer {
+    width: min(100%, 50rem);
+    margin-top: 4rem;
+    text-align: center;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 640px) {
+    .site {
+      padding-inline: 1rem;
+    }
+
+    .site-header {
+      margin-bottom: 2.5rem;
+    }
+  }
+</style>
