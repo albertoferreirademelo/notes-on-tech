@@ -6,4 +6,4 @@ pubDate: 2025-10-31
 slug: "budgetapp"
 ---
 
-I’m building a small Streamlit app to visualize and plan family budgets. It ingests exports from Swedish banks and highlights recurring costs that feel "colder" than they should.
+I’m building a small Streamlit app to visualize and plan family budgets. It ingests exports from Swedish banks, connect all the accounts and highlights budget and costs.

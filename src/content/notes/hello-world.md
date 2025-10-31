@@ -7,7 +7,7 @@ lang: "en"
 image: "/blog/251030_hello_world/fmd_coffee.png"
 ---
 
-### Welcome — and thanks for stopping by.
+### Welcome and thanks for stopping by!
 
 This site is my small corner of the internet. No dashboards, no pop-ups, no noise. Just markdown, curiosity, and the occasional cup of coffee.
 
