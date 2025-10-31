@@ -1,26 +1,28 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+
 interface Props {
-  title: string;
-  description: string;
-  href?: string;
-  image?: string;
+  project: CollectionEntry<'projects'>;
 }
 
-const { title, description, href, image } = Astro.props;
+const { project } = Astro.props;
 const base = import.meta.env.BASE_URL || '/';
 const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
-const withBase = (path: string) =>
-  path && path.startsWith('/') ? `${normalizeBase}${path}` : path;
+const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
+const { data } = project;
+const projectUrl = withBase(`/projects/${project.slug}/`);
+const imageUrl = data.image ? withBase(data.image) : null;
 ---
 <article class="project-card">
-  {image && (
+  {imageUrl && (
     <div class="image-wrapper">
-      <img src={image} alt="" loading="lazy" />
+      <img src={imageUrl} alt="" loading="lazy" />
     </div>
   )}
   <div class="content">
-    <h3>{href ? <a href={withBase(href)}>{title}</a> : title}</h3>
-    <p>{description}</p>
+    <h3><a href={projectUrl}>{data.title}</a></h3>
+    <p>{data.description}</p>
+    <p class="status">Status: <span>{data.status}</span></p>
   </div>
 </article>
 
@@ -55,7 +57,7 @@ const withBase = (path: string) =>
   }
 
   h3 {
-    margin: 0 0 0.35rem;
+    margin: 0;
     font-family: var(--font-serif);
     font-size: 1.25rem;
   }
@@ -72,5 +74,12 @@ const withBase = (path: string) =>
   p {
     margin: 0;
     color: var(--color-text-muted);
+  }
+
+  .status span {
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
   }
 </style>

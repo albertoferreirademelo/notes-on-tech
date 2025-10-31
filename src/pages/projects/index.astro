@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import PersonalLayout from '../../layouts/PersonalLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+// Add a new markdown file in src/content/projects to feature another build or experiment.
+const projects = (await getCollection('projects')).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+);
+---
+<PersonalLayout title="Projects | Alberto Ferreira de Melo" description="Current experiments, prototypes, and side quests.">
+  <section class="intro card">
+    <h1>Projects &amp; experiments</h1>
+    <p>
+      I follow multiple threads at once — some are tangible builds, others are research notes or playful prompts. Every entry
+      here is powered by a markdown file so updates stay quick.
+    </p>
+  </section>
+
+  <section aria-live="polite" class="grid">
+    {projects.length > 0 ? (
+      projects.map((project) => <ProjectCard project={project} />)
+    ) : (
+      <p class="empty">Projects &amp; experiments will appear here as I publish them.</p>
+    )}
+  </section>
+</PersonalLayout>
+
+<style>
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 3vw + 1rem, 2.6rem);
+    margin: 0;
+  }
+
+  .intro {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .intro p {
+    margin: 0;
+    color: var(--color-text-muted);
+    max-width: 55ch;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .empty {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import PersonalLayout from '../../layouts/PersonalLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await project.render();
+
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
+const imageUrl = data.image ? withBase(data.image) : null;
+const formattedDate = data.pubDate.toLocaleDateString('en-GB', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+<PersonalLayout title={`${data.title} | Alberto Ferreira de Melo`} description={data.description}>
+  <article class="project-detail card">
+    <header class="project-header">
+      <a class="back-link" href={withBase('/projects')}>&larr; Back to projects</a>
+      <p class="meta">
+        <span class="status">{data.status}</span>
+        <time dateTime={data.pubDate.toISOString()}>{formattedDate}</time>
+      </p>
+      <h1>{data.title}</h1>
+      <p class="description">{data.description}</p>
+      {imageUrl && (
+        <img src={imageUrl} alt="" loading="lazy" class="project-image" />
+      )}
+    </header>
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</PersonalLayout>
+
+<style>
+  .project-detail {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .project-header {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .back-link {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  .meta {
+    margin: 0;
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
+    padding: 0.15rem 0.75rem;
+    border-radius: 999px;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw + 1rem, 3rem);
+  }
+
+  .description {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+  }
+
+  .project-image {
+    width: 100%;
+    max-width: 42rem;
+    justify-self: center;
+  }
+
+  .content :global(p) {
+    margin-bottom: 1.4rem;
+    color: var(--color-text-muted);
+  }
+
+  .content :global(h2),
+  .content :global(h3) {
+    font-family: var(--font-serif);
+    margin-top: 2.4rem;
+    margin-bottom: 1rem;
+  }
+</style>
