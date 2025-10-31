@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import PersonalLayout from '../layouts/PersonalLayout.astro';
-import NoteList from '../components/NoteList.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 
 // Add new markdown entries in src/content/notes and src/content/projects to populate the sections below.
@@ -18,6 +17,11 @@ const latestProjects = allProjects.slice(0, 3);
 const base = import.meta.env.BASE_URL || '/';
 const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
 const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
+const resolveImage = (path?: string) => {
+  if (!path) return undefined;
+  if (/^https?:\/\//i.test(path)) return path;
+  return withBase(path);
+};
 ---
 <PersonalLayout title="Alberto Ferreira de Melo" description="Thoughts, experiments, and notes on technology and life.">
   <section class="intro card">
@@ -38,7 +42,36 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
       <a href={withBase('/notes')} class="section-link">See all notes</a>
     </div>
     {latestNotes.length > 0 ? (
-      <NoteList notes={latestNotes} />
+      <ul class="note-list">
+        {latestNotes.map((note) => {
+          const formattedDate = note.data.pubDate.toLocaleDateString('en-GB', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+          const language = (note.data.lang ?? 'en').toUpperCase();
+          const imageUrl = resolveImage(note.data.image);
+          return (
+            <li class={{ 'note-card': true, 'note-card--with-image': Boolean(imageUrl) }}>
+              <a href={withBase(`/notes/${note.slug}/`)} class="note-card__link">
+                {imageUrl && (
+                  <div class="note-card__media" aria-hidden="true">
+                    <img src={imageUrl} alt="" loading="lazy" decoding="async" />
+                  </div>
+                )}
+                <div class="note-card__content">
+                  <header>
+                    <span class="note-card__date">{formattedDate}</span>
+                    <span class="note-card__lang">{language}</span>
+                  </header>
+                  <h3>{note.data.title}</h3>
+                  <p>{note.data.description}</p>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     ) : (
       <p class="empty">Notes will appear here as soon as I publish the first one.</p>
     )}
@@ -104,6 +137,107 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
     margin: 0;
     color: var(--color-text-muted);
     font-size: 0.95rem;
+  }
+
+  .note-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .note-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--transition), transform var(--transition);
+  }
+
+  .note-card__link {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.2rem 1.35rem;
+    color: inherit;
+  }
+
+  .note-card--with-image .note-card__link {
+    flex-direction: column;
+  }
+
+  .note-card__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    width: min(100%, 200px);
+    max-width: 220px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .note-card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .note-card__content {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .note-card__content header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .note-card__lang {
+    background: rgba(76, 183, 181, 0.12);
+    color: var(--color-accent);
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+  }
+
+  .note-card__content h3 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+  }
+
+  .note-card__content p {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  .note-card:hover,
+  .note-card:focus-within {
+    border-color: rgba(76, 183, 181, 0.35);
+    transform: translateY(-2px);
+  }
+
+  @media (min-width: 640px) {
+    .note-card__link {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .note-card--with-image .note-card__link {
+      flex-direction: row;
+      align-items: stretch;
+    }
+
+    .note-card__media {
+      flex: 0 0 180px;
+      max-width: 180px;
+      width: 180px;
+      height: 120px;
+    }
   }
 
   .project-grid {
