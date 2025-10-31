@@ -7,6 +7,9 @@ interface Props {
 }
 
 const { notes, showLanguage = false } = Astro.props;
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) => `${normalizeBase}${path}`;
 ---
 <ul class="note-list">
   {notes.map((note) => {
@@ -18,7 +21,7 @@ const { notes, showLanguage = false } = Astro.props;
     });
     return (
       <li>
-        <a href={`/blog/${note.slug}/`}>
+        <a href={withBase(`/blog/${note.slug}/`)}>
           <span class="note-title">{note.data.title}</span>
           <span class="note-meta">
             <time dateTime={note.data.pubDate.toISOString()}>{displayDate}</time>

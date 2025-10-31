@@ -7,6 +7,10 @@ interface Props {
 }
 
 const { title, description, href, image } = Astro.props;
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) =>
+  path && path.startsWith('/') ? `${normalizeBase}${path}` : path;
 ---
 <article class="project-card">
   {image && (
@@ -15,7 +19,7 @@ const { title, description, href, image } = Astro.props;
     </div>
   )}
   <div class="content">
-    <h3>{href ? <a href={href}>{title}</a> : title}</h3>
+    <h3>{href ? <a href={withBase(href)}>{title}</a> : title}</h3>
     <p>{description}</p>
   </div>
 </article>

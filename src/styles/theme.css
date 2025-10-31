@@ -4,8 +4,8 @@
   --color-surface: #1c1c1c;
   --color-surface-muted: #232323;
   --color-border: rgba(255, 255, 255, 0.05);
-  --color-text: #f2f2f2;
-  --color-text-muted: rgba(242, 242, 242, 0.65);
+  --color-text: #eaeaea;
+  --color-text-muted: rgba(234, 234, 234, 0.68);
   --color-accent: #4cb7b5;
   --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   --font-serif: 'Playfair Display', 'Merriweather', Georgia, serif;
@@ -13,7 +13,7 @@
   --radius-md: 0.5rem;
   --radius-sm: 0.35rem;
   --transition: 180ms ease;
-  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 22px 45px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -27,10 +27,90 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--color-bg);
+  background: #141414;
   color: var(--color-text);
   min-height: 100vh;
   line-height: 1.6;
+}
+
+.site-shell {
+  min-height: 100vh;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.site-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: center;
+}
+
+.site-note {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.site-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 4vw + 1rem, 3.2rem);
+  color: var(--color-text);
+}
+
+.site-subtitle {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 0.95rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--color-text);
+  background: rgba(76, 183, 181, 0.16);
+  transform: translateY(-1px);
+}
+
+.site-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.site-footer {
+  margin-top: auto;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }
 
 a {
@@ -113,7 +193,11 @@ hr {
     padding: 1.35rem;
   }
 
-  img {
-    margin: 1.5rem auto;
+  .site-shell {
+    padding: 2rem 1.05rem 3rem;
+  }
+
+  .site-nav ul {
+    gap: 0.75rem;
   }
 }
