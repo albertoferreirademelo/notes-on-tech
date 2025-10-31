@@ -19,6 +19,11 @@ const years = Array.from(notesByYear.keys()).sort((a, b) => b - a);
 const base = import.meta.env.BASE_URL || '/';
 const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
 const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
+const resolveImage = (path?: string) => {
+  if (!path) return undefined;
+  if (/^https?:\/\//i.test(path)) return path;
+  return withBase(path);
+};
 ---
 <PersonalLayout title="Notes archive | Alberto Ferreira de Melo" description="All notes, experiments, and reflections in one place.">
   <section class="intro card">
@@ -50,18 +55,27 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
                   day: 'numeric',
                 });
                 const language = (note.data.lang ?? 'en').toUpperCase();
+                const imageUrl = resolveImage(note.data.image);
                 return (
                   <li
                     data-title={note.data.title.toLowerCase()}
                     data-description={note.data.description.toLowerCase()}
+                    class={{ 'note-item': true, 'note-item--with-image': Boolean(imageUrl) }}
                   >
-                    <a href={withBase(`/notes/${note.slug}/`)}>
-                      <p class="note-meta">
-                        <span>{formattedDate}</span>
-                        <span class="note-lang">{language}</span>
-                      </p>
-                      <h4>{note.data.title}</h4>
-                      <p>{note.data.description}</p>
+                    <a href={withBase(`/notes/${note.slug}/`)} class="note-item__link">
+                      {imageUrl && (
+                        <div class="note-item__media" aria-hidden="true">
+                          <img src={imageUrl} alt="" loading="lazy" decoding="async" />
+                        </div>
+                      )}
+                      <div class="note-item__content">
+                        <p class="note-meta">
+                          <span>{formattedDate}</span>
+                          <span class="note-lang">{language}</span>
+                        </p>
+                        <h4>{note.data.title}</h4>
+                        <p>{note.data.description}</p>
+                      </div>
                     </a>
                   </li>
                 );
@@ -191,24 +205,46 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
     gap: 1.2rem;
   }
 
-  li {
+  .note-item {
     background: #1b1b1b;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     transition: border-color var(--transition), transform var(--transition);
   }
 
-  li:hover,
-  li:focus-within {
+  .note-item:hover,
+  .note-item:focus-within {
     border-color: rgba(76, 183, 181, 0.35);
     transform: translateY(-2px);
   }
 
-  a {
-    display: grid;
-    gap: 0.55rem;
+  .note-item__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
     padding: 1.25rem 1.4rem;
     color: inherit;
+  }
+
+  .note-item__media {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    width: min(100%, 200px);
+    max-width: 220px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .note-item__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .note-item__content {
+    display: grid;
+    gap: 0.55rem;
   }
 
   .note-meta {
@@ -234,9 +270,23 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
     font-size: 1.2rem;
   }
 
-  li p:last-child {
+  .note-item__content p:last-child {
     margin: 0;
     color: var(--color-text-muted);
+  }
+
+  @media (min-width: 640px) {
+    .note-item__link {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .note-item__media {
+      flex: 0 0 180px;
+      max-width: 180px;
+      width: 180px;
+      height: 120px;
+    }
   }
 
   .notes-empty {
