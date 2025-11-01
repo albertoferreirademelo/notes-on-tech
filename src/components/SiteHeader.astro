@@ -5,17 +5,21 @@ const links = [
   { href: '/projects', label: 'Projects' },
   { href: '/about', label: 'About' },
 ];
+
+const base = import.meta.env.BASE_URL || '/';
+const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
+const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
 ---
 <header aria-label="Primary">
   <div class="shell">
-    <a class="logo" href="/" aria-label="Alberto Ferreira de Melo home">
+    <a class="logo" href={withBase('/')} aria-label="Alberto Ferreira de Melo home">
       <span class="logo-mark">FdM</span>
       <span class="logo-text">Alberto Ferreira de Melo</span>
     </a>
     <nav aria-label="Main navigation">
       <ul>
         {links.map((link) => (
-          <li><a href={link.href}>{link.label}</a></li>
+          <li><a href={withBase(link.href)}>{link.label}</a></li>
         ))}
       </ul>
     </nav>
