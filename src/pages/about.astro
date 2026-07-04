@@ -1,44 +1,48 @@
 ---
 import PersonalLayout from '../layouts/PersonalLayout.astro';
 ---
-<PersonalLayout title="About | Alberto Ferreira de Melo" description="Who I am, what I’m exploring, and why this notebook exists.">
-  <article class="bio card">
-    <h1>About Alberto</h1>
-      <p>
-        I work at the intersection of data, design and public service.  
-        My focus is on making AI transparent, humane and genuinely useful.  
-        Sweden is home now, and Brazil will always be the other.
-      </p>
-      <p>
-        This site is my working notebook.  
-        I write in English and Swedish, document side projects  
-        and share ideas before they are fully formed.  
-        The goal is to show process, not polish.
-      </p>
-      <p>
-        Outside of work I like to explore new tools, photograph  
-        and experiment with 3D printing and small electronics.  
-        Curiosity connects it all.
-      </p>
-  </article>
+<PersonalLayout
+  current="about"
+  title="About — Alberto Ferreira de Melo"
+  description="Who I am, what I'm exploring, and why this notebook exists."
+>
+  <main class="wrap">
+    <header class="arkiv-head">
+      <p class="section-label">About &mdash; Om mig</p>
+      <h1>Alberto<br />Ferreira de&nbsp;Melo</h1>
+    </header>
+
+    <section class="about" aria-label="Biography">
+      <h2 class="about-label">Work</h2>
+      <div class="about-text">
+        <p>
+          I work at the intersection of data, design and public service. My focus is on making AI
+          transparent, humane and genuinely useful. Sweden is home now, and Brazil will always be
+          the other.
+        </p>
+      </div>
+    </section>
+
+    <section class="about" style="padding-top:0" aria-label="This site">
+      <h2 class="about-label">This site</h2>
+      <div class="about-text">
+        <p>
+          This site is my working notebook. I write in English and Swedish, document side projects
+          and share ideas before they are fully formed. The goal is to <em>show process, not
+          polish</em> — which is also why the drawing on the front page is different on every
+          visit: the page plots itself while you read, and no two visitors see the same artwork.
+        </p>
+      </div>
+    </section>
+
+    <section class="about" style="padding-top:0" aria-label="Off the clock">
+      <h2 class="about-label">Off the clock</h2>
+      <div class="about-text">
+        <p>
+          Photography, 3D printing and small electronics — and more coffee than is strictly
+          advisable. Curiosity connects it all.
+        </p>
+      </div>
+    </section>
+  </main>
 </PersonalLayout>
-
-<style>
-  h1 {
-    font-family: var(--font-serif);
-    font-size: clamp(2rem, 4vw + 1rem, 3rem);
-    margin: 0 0 1.5rem;
-  }
-
-  .bio {
-    margin-top: 1rem;
-    display: grid;
-    gap: 1.25rem;
-  }
-
-  p {
-    margin: 0;
-    color: var(--color-text-muted);
-    max-width: 60ch;
-  }
-</style>

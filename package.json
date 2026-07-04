@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@fontsource-variable/bodoni-moda": "^5.2.7",
     "astro": "^5.15.3",
     "gh-pages": "^6.3.0"
   }
