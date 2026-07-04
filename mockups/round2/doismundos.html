@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alberto Ferreira de Melo — Dois mundos / Två världar</title>
+</head>
+<body>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  /* São Paulo world */
+  --sp-a:#F2784B; --sp-b:#C74B6B; --sp-c:#5B2A54; --sp-sil:#38173A;
+  /* Stockholm world */
+  --sth-a:#A8C6DE; --sth-b:#5E7FA8; --sth-c:#1B2A52; --sth-sil:#13203E;
+  /* content */
+  --paper-warm:#FBF1EA; --paper-mid:#F7F5F1; --paper-cool:#EEF2F7;
+  --card:#F7F5F1; --card-border:rgba(34,39,58,.12);
+  --ink:#22273A; --ink-soft:rgba(34,39,58,.72);
+  --warm:#E0704E; --warm-ink:#B94F35; --cool:#5E7FA8;
+  --label:#5D6370; --chip-en:#5D6370; --chip-sv:#47688F;
+  --rail:rgba(34,39,58,.32);
+  --seam-core:rgba(255,240,220,.95);
+  --seam-glow-a:rgba(255,228,196,.55); --seam-glow-b:rgba(255,214,182,.22);
+  --footer-bg:#1B2A52; --footer-ink:#DEE6F2;
+  --stars:0; --aurora:0;
+  --journey:0;
+  --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  --sans:Futura,'Century Gothic','Avenir Next','Trebuchet MS',sans-serif;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --sp-a:#74213E; --sp-b:#4E1937; --sp-c:#2E1230; --sp-sil:#1C0A1E;
+    --sth-a:#16233F; --sth-b:#0E1730; --sth-c:#060B1A; --sth-sil:#03060F;
+    --paper-warm:#1C161B; --paper-mid:#15181F; --paper-cool:#121722;
+    --card:#1D212B; --card-border:rgba(232,234,242,.12);
+    --ink:#E8EAF2; --ink-soft:rgba(232,234,242,.72);
+    --warm:#E88A67; --warm-ink:#E88A67; --cool:#7E9CC4;
+    --label:#9AA1B0; --chip-en:#9AA1B0; --chip-sv:#8FAEDB;
+    --rail:rgba(232,234,242,.28);
+    --seam-core:rgba(255,236,214,.85);
+    --seam-glow-a:rgba(255,214,178,.4); --seam-glow-b:rgba(240,190,160,.16);
+    --footer-bg:#060B1A; --footer-ink:#C9D3E6;
+    --stars:1; --aurora:1;
+  }
+}
+:root[data-theme="dark"]{
+  --sp-a:#74213E; --sp-b:#4E1937; --sp-c:#2E1230; --sp-sil:#1C0A1E;
+  --sth-a:#16233F; --sth-b:#0E1730; --sth-c:#060B1A; --sth-sil:#03060F;
+  --paper-warm:#1C161B; --paper-mid:#15181F; --paper-cool:#121722;
+  --card:#1D212B; --card-border:rgba(232,234,242,.12);
+  --ink:#E8EAF2; --ink-soft:rgba(232,234,242,.72);
+  --warm:#E88A67; --warm-ink:#E88A67; --cool:#7E9CC4;
+  --label:#9AA1B0; --chip-en:#9AA1B0; --chip-sv:#8FAEDB;
+  --rail:rgba(232,234,242,.28);
+  --seam-core:rgba(255,236,214,.85);
+  --seam-glow-a:rgba(255,214,178,.4); --seam-glow-b:rgba(240,190,160,.16);
+  --footer-bg:#060B1A; --footer-ink:#C9D3E6;
+  --stars:1; --aurora:1;
+}
+:root[data-theme="light"]{
+  --sp-a:#F2784B; --sp-b:#C74B6B; --sp-c:#5B2A54; --sp-sil:#38173A;
+  --sth-a:#A8C6DE; --sth-b:#5E7FA8; --sth-c:#1B2A52; --sth-sil:#13203E;
+  --paper-warm:#FBF1EA; --paper-mid:#F7F5F1; --paper-cool:#EEF2F7;
+  --card:#F7F5F1; --card-border:rgba(34,39,58,.12);
+  --ink:#22273A; --ink-soft:rgba(34,39,58,.72);
+  --warm:#E0704E; --warm-ink:#B94F35; --cool:#5E7FA8;
+  --label:#5D6370; --chip-en:#5D6370; --chip-sv:#47688F;
+  --rail:rgba(34,39,58,.32);
+  --seam-core:rgba(255,240,220,.95);
+  --seam-glow-a:rgba(255,228,196,.55); --seam-glow-b:rgba(255,214,182,.22);
+  --footer-bg:#1B2A52; --footer-ink:#DEE6F2;
+  --stars:0; --aurora:0;
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--serif);
+  color:var(--ink);
+  background:var(--paper-warm);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--warm);outline-offset:3px;border-radius:2px}
+::selection{background:var(--warm);color:#fff}
+
+.klabel{
+  font-family:var(--sans);
+  text-transform:uppercase;
+  letter-spacing:.25em;
+  font-size:.72rem;
+  font-weight:500;
+  color:var(--label);
+}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;
+  height:100vh; height:100svh;
+  min-height:580px;
+  overflow:hidden;
+  background:var(--sth-c);
+}
+.layer{
+  position:absolute; top:0; bottom:0;
+  left:-15vw; width:130vw;
+}
+.jsmove{position:absolute; inset:0; will-change:transform}
+.layer-sth{
+  background:linear-gradient(180deg,var(--sth-a) 0%,var(--sth-b) 52%,var(--sth-c) 100%);
+  animation:fromRight .9s cubic-bezier(.22,.61,.36,1) both;
+}
+.layer-sp{
+  background:linear-gradient(180deg,var(--sp-a) 0%,var(--sp-b) 52%,var(--sp-c) 100%);
+  clip-path:polygon(0 0, calc(50% - 11vh) 0, calc(50% + 11vh) 100%, 0 100%);
+  animation:fromLeft .9s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes fromLeft{from{transform:translate3d(-16vw,0,0)}to{transform:translate3d(0,0,0)}}
+@keyframes fromRight{from{transform:translate3d(16vw,0,0)}to{transform:translate3d(0,0,0)}}
+
+.skyline{
+  position:absolute; bottom:0; left:0; width:100%;
+  height:150px; display:block;
+}
+.skyline-sp{fill:var(--sp-sil)}
+.skyline-sth{fill:var(--sth-sil)}
+
+.stars{position:absolute;inset:0;opacity:var(--stars);pointer-events:none}
+.aurora{
+  position:absolute; top:2%; right:4%;
+  width:36%; height:58%;
+  background:linear-gradient(104deg,transparent 22%,rgba(112,224,178,.20) 50%,transparent 78%);
+  filter:blur(26px);
+  transform:rotate(-16deg);
+  opacity:var(--aurora);
+  pointer-events:none;
+}
+
+.seam-wrap{position:absolute;inset:0;pointer-events:none;will-change:transform}
+.seam{
+  position:absolute; left:50%; top:50%;
+  width:2px; height:112vh;
+  transform:translate(-50%,-50%) rotate(-12.4deg);
+  background:linear-gradient(180deg,transparent 0%,var(--seam-core) 18%,var(--seam-core) 82%,transparent 100%);
+  box-shadow:0 0 18px 3px var(--seam-glow-a), 0 0 64px 16px var(--seam-glow-b);
+  animation:seamIn 1.2s ease .5s both;
+}
+@keyframes seamIn{from{opacity:0}to{opacity:1}}
+
+.hero-nav{
+  position:absolute; top:0; left:0; right:0;
+  display:flex; justify-content:space-between; align-items:baseline;
+  padding:26px clamp(20px,4vw,44px) 40px;
+  z-index:5;
+  background:linear-gradient(180deg, rgba(12,14,32,.30), rgba(12,14,32,0));
+}
+.wordmark{
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.06em;
+  color:rgba(255,255,255,.92); text-decoration:none;
+  text-shadow:0 1px 10px rgba(14,10,30,.55), 0 1px 2px rgba(14,10,30,.4);
+}
+.hero-nav ul{display:flex; gap:clamp(16px,3vw,34px); list-style:none; margin:0; padding:0}
+.hero-nav ul a{
+  font-family:var(--sans); text-transform:uppercase; letter-spacing:.25em;
+  font-size:.7rem; color:rgba(255,255,255,.95); text-decoration:none;
+  text-shadow:0 1px 10px rgba(14,10,30,.55), 0 1px 2px rgba(14,10,30,.4);
+  padding-bottom:3px; border-bottom:1px solid transparent;
+  transition:border-color .25s ease;
+}
+.hero-nav ul a:hover{border-bottom-color:rgba(255,255,255,.7)}
+
+.hero-copy{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  text-align:center;
+  padding:0 clamp(20px,5vw,60px);
+  z-index:4;
+  pointer-events:none;
+}
+.hero-copy h1{
+  margin:0;
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(2rem,5.6vw,4.4rem);
+  line-height:1.14;
+  color:#fff;
+  text-shadow:0 2px 26px rgba(14,10,30,.5), 0 1px 3px rgba(14,10,30,.4);
+  text-wrap:balance;
+  max-width:20ch;
+}
+.hero-copy h1 .ph{display:inline-block; animation:riseIn .8s cubic-bezier(.22,.61,.36,1) both}
+.hero-copy h1 .ph:nth-child(1){animation-delay:.45s}
+.hero-copy h1 .ph:nth-child(2){animation-delay:.6s}
+.hero-copy h1 .ph:nth-child(3){animation-delay:.75s}
+@keyframes riseIn{from{opacity:0;transform:translateY(.55em)}to{opacity:1;transform:none}}
+.hero-sub{
+  margin:1.6em auto 0; max-width:44ch;
+  font-family:var(--serif); font-style:italic;
+  font-size:clamp(1rem,1.5vw,1.2rem);
+  color:rgba(255,255,255,.92);
+  text-shadow:0 1px 14px rgba(14,10,30,.55);
+  animation:riseIn .8s cubic-bezier(.22,.61,.36,1) 1s both;
+}
+.scroll-cue{
+  position:absolute; bottom:170px; left:50%; transform:translateX(-50%);
+  font-family:var(--mono); font-size:.75rem; letter-spacing:.14em;
+  color:rgba(255,255,255,.9);
+  text-shadow:0 1px 4px rgba(14,10,30,.8), 0 1px 12px rgba(14,10,30,.6);
+  z-index:5;
+  animation:riseIn .8s ease 1.25s both;
+}
+
+/* ============ CONTENT / JOURNEY ============ */
+.content{
+  position:relative;
+  background:var(--paper-warm);
+}
+.veil{
+  position:absolute; inset:0;
+  background:var(--paper-cool);
+  opacity:var(--journey);
+  pointer-events:none;
+}
+
+/* flight rail (desktop only) */
+.rail{
+  position:absolute; top:0; bottom:0; left:50%;
+  width:1120px; max-width:100%;
+  transform:translateX(-50%);
+  pointer-events:none;
+  display:none;
+}
+.rail-line{
+  position:absolute; left:80px; top:56px; bottom:56px; width:0;
+  border-left:2px dotted var(--rail);
+}
+.plane{
+  position:absolute; left:81px; top:56px;
+  width:20px; height:20px;
+  transform:translate(-50%,0);
+  will-change:transform;
+  color:var(--warm);
+}
+.plane svg{display:block;width:100%;height:100%}
+
+.shell{
+  position:relative;
+  max-width:1120px;
+  margin:0 auto;
+  padding:0 clamp(20px,5vw,48px);
+}
+.waypoint{
+  display:none;
+  position:absolute; left:96px; top:64px;
+  writing-mode:vertical-rl;
+  font-family:var(--mono); font-size:.72rem; letter-spacing:.16em;
+  color:var(--label);
+  white-space:nowrap;
+}
+.waypoint::before{
+  content:"";
+  position:absolute; left:-18.5px; top:1px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--label);
+}
+@media (min-width:960px){
+  .rail{display:block}
+  .waypoint{display:block}
+  .shell{padding-left:170px}
+}
+
+section{position:relative}
+.sec-notes{padding-top:clamp(5rem,10vh,8rem); padding-bottom:2rem}
+.sec-about{padding-top:clamp(5rem,11vh,9rem); padding-bottom:2rem}
+.sec-work{padding-top:clamp(5rem,11vh,8rem); padding-bottom:clamp(6rem,12vh,9rem)}
+
+.sec-head{margin-bottom:2.6rem}
+.sec-head .klabel{display:block; margin-bottom:.9rem}
+.sec-head h2{
+  margin:0;
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(1.5rem,2.6vw,2.1rem);
+  line-height:1.25;
+  text-wrap:balance;
+}
+
+/* notes cards */
+.notes-list{display:flex; flex-direction:column; gap:14px; list-style:none; margin:0; padding:0}
+.note{
+  position:relative;
+  display:grid;
+  grid-template-columns:118px minmax(0,1fr) auto;
+  gap:6px 26px;
+  align-items:baseline;
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:3px;
+  padding:22px 26px;
+  text-decoration:none;
+  transition:transform .3s ease, border-color .3s ease;
+}
+.note:hover{border-color:var(--warm)}
+.note .date{
+  font-family:var(--mono); font-size:.74rem; letter-spacing:.06em;
+  color:var(--label);
+  grid-row:1 / span 2;
+  padding-top:.25em;
+}
+.note h3{
+  margin:0;
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(1.1rem,1.8vw,1.4rem);
+  line-height:1.3;
+}
+.note h3 em{font-style:italic}
+.note .desc{
+  grid-column:2;
+  margin:0;
+  font-size:.95rem;
+  color:var(--ink-soft);
+}
+.chip{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.18em;
+  border:1px solid currentColor; border-radius:2px;
+  padding:3px 9px 2px;
+  align-self:start;
+  margin-top:.3em;
+}
+.chip-en{color:var(--chip-en)}
+.chip-sv{color:var(--chip-sv)}
+@media (max-width:640px){
+  .note{grid-template-columns:minmax(0,1fr) auto; padding:18px 20px}
+  .note .date{grid-row:auto; grid-column:1 / -1; padding-top:0}
+  .note .desc{grid-column:1 / -1}
+  .chip{grid-row:2; grid-column:2}
+}
+
+/* about */
+.about-grid{
+  display:grid;
+  grid-template-columns:minmax(0,10fr) minmax(0,9fr);
+  gap:clamp(2.4rem,5vw,4.5rem);
+  align-items:start;
+}
+.pull{
+  margin:0;
+  font-family:var(--serif); font-weight:500;
+  font-size:clamp(1.7rem,3.4vw,2.7rem);
+  line-height:1.28;
+  text-wrap:balance;
+}
+.pull .q-sp{color:var(--warm-ink)}
+.pull .q-sth{color:var(--cool)}
+.pull cite{
+  display:block; margin-top:1.4rem;
+  font-family:var(--mono); font-style:normal;
+  font-size:.72rem; letter-spacing:.12em; color:var(--label);
+}
+.bio p{margin:0 0 1.15em; font-size:1.02rem; max-width:58ch}
+.bio p:last-child{margin-bottom:0}
+.bio .voice{font-style:italic; color:var(--ink-soft)}
+@media (max-width:820px){
+  .about-grid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* workbench — boarding-pass stub */
+.stub{
+  display:flex; flex-wrap:wrap; align-items:center;
+  gap:14px 26px;
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-left:2px dashed var(--label);
+  border-radius:0 4px 4px 0;
+  padding:20px 26px;
+}
+.stub .tag{
+  font-family:var(--sans); text-transform:uppercase; letter-spacing:.25em;
+  font-size:.68rem; font-weight:600;
+  color:var(--warm-ink);
+  padding-right:24px;
+  border-right:1px solid var(--card-border);
+}
+.stub .cargo{
+  font-family:var(--mono); font-size:.8rem; letter-spacing:.04em;
+  color:var(--ink-soft);
+}
+@media (max-width:640px){
+  .stub .tag{border-right:0; padding-right:0}
+}
+
+/* ============ FOOTER ============ */
+footer{background:var(--paper-cool)}
+.footer-skyline{
+  display:block; width:100%; height:52px;
+  fill:var(--footer-bg);
+  margin-bottom:-1px;
+}
+footer .landing{
+  background:var(--footer-bg);
+  color:var(--footer-ink);
+  padding:2.4rem 0 3rem;
+}
+.foot-row{
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline;
+  gap:14px 30px;
+}
+.foot-row .copy{font-family:var(--serif); font-size:.92rem}
+.foot-links{display:flex; gap:26px; list-style:none; margin:0; padding:0}
+.foot-links a{
+  font-family:var(--sans); text-transform:uppercase; letter-spacing:.22em;
+  font-size:.66rem; color:var(--footer-ink); text-decoration:none;
+  border-bottom:1px solid transparent; padding-bottom:2px;
+  transition:border-color .25s ease;
+}
+.foot-links a:hover{border-bottom-color:var(--footer-ink)}
+.arrival-note{
+  margin-top:1.6rem;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.12em;
+  color:var(--footer-ink); opacity:.62;
+}
+footer .shell{padding-left:clamp(20px,5vw,48px)}
+
+/* ============ REDUCED MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+  }
+}
+</style>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <!-- Stockholm world (base) -->
+  <div class="layer layer-sth">
+    <svg class="stars" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="#EAF2FF">
+        <circle cx="55%" cy="7%" r="1.5"/><circle cx="61%" cy="16%" r="1" opacity=".8"/>
+        <circle cx="67%" cy="5%" r="1.2" opacity=".9"/><circle cx="72%" cy="21%" r="0.9" opacity=".7"/>
+        <circle cx="77%" cy="9%" r="1.6"/><circle cx="82%" cy="27%" r="1" opacity=".75"/>
+        <circle cx="86%" cy="13%" r="1.2" opacity=".9"/><circle cx="90%" cy="4%" r="0.9" opacity=".8"/>
+        <circle cx="94%" cy="19%" r="1.4"/><circle cx="59%" cy="30%" r="0.8" opacity=".6"/>
+        <circle cx="65%" cy="37%" r="1.1" opacity=".75"/><circle cx="71%" cy="32%" r="0.8" opacity=".6"/>
+        <circle cx="79%" cy="40%" r="1.2" opacity=".7"/><circle cx="88%" cy="35%" r="0.9" opacity=".65"/>
+        <circle cx="93%" cy="44%" r="1" opacity=".6"/><circle cx="84%" cy="48%" r="0.8" opacity=".5"/>
+        <circle cx="63%" cy="24%" r="0.75" opacity=".55"/><circle cx="97%" cy="30%" r="0.8" opacity=".7"/>
+        <circle cx="75%" cy="15%" r="0.75" opacity=".6"/><circle cx="98%" cy="9%" r="1" opacity=".8"/>
+        <circle cx="69%" cy="45%" r="0.75" opacity=".5"/><circle cx="57%" cy="41%" r="0.8" opacity=".55"/>
+      </g>
+    </svg>
+    <div class="aurora"></div>
+    <svg class="skyline skyline-sth" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <g id="sthline">
+        <!-- low rooflines, gables, church spire, Kaknäs needle -->
+        <path d="M0 160 V120 H40 L58 100 L76 120 H120 V112 H170 L188 92 L206 112 H240 V160 Z"/>
+        <path d="M240 160 V118 H300 L318 96 L336 118 H360 V108 H420 V160 Z"/>
+        <!-- church: tower + tall thin spire -->
+        <path d="M430 160 V86 H470 V160 Z M444 86 H456 L452 40 H448 Z M449 40 H451 V22 H449 Z"/>
+        <path d="M480 160 V116 H540 L556 98 L572 116 H610 V124 H660 V160 Z"/>
+        <path d="M660 160 V110 H700 L716 90 L732 110 H780 V118 H830 V160 Z"/>
+        <!-- Kaknäs TV tower: thin needle with box near top -->
+        <path d="M866 160 L872 60 H878 L884 160 Z M869 60 H881 V44 H869 Z M874 44 H876 V14 H874 Z"/>
+        <path d="M900 160 V122 H950 L966 104 L982 122 H1030 V114 H1080 L1096 96 L1112 114 H1150 V126 H1200 V160 Z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- São Paulo world (clipped, JS-moved) -->
+  <div class="jsmove" id="spMove">
+    <div class="layer layer-sp">
+      <svg class="skyline skyline-sp" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <!-- dense mixed-height blocks -->
+        <rect x="0" y="70" width="46" height="90"/>
+        <rect x="52" y="98" width="30" height="62"/>
+        <rect x="88" y="52" width="40" height="108"/>
+        <rect x="134" y="86" width="26" height="74"/>
+        <rect x="166" y="34" width="48" height="126"/>
+        <rect x="220" y="76" width="34" height="84"/>
+        <!-- Copan: gently S-curved slab -->
+        <path d="M262 160 V62 q26 -14 52 0 q26 14 52 0 V160 Z"/>
+        <rect x="376" y="46" width="38" height="114"/>
+        <rect x="420" y="92" width="28" height="68"/>
+        <rect x="454" y="26" width="52" height="134"/>
+        <rect x="512" y="70" width="30" height="90"/>
+        <rect x="548" y="104" width="42" height="56"/>
+        <rect x="596" y="42" width="36" height="118"/>
+        <rect x="638" y="82" width="26" height="78"/>
+        <rect x="670" y="58" width="46" height="102"/>
+        <rect x="722" y="96" width="32" height="64"/>
+        <rect x="760" y="30" width="42" height="130"/>
+        <rect x="808" y="74" width="28" height="86"/>
+        <rect x="842" y="50" width="50" height="110"/>
+        <rect x="898" y="90" width="30" height="70"/>
+        <rect x="934" y="38" width="40" height="122"/>
+        <rect x="980" y="80" width="30" height="80"/>
+        <rect x="1016" y="60" width="44" height="100"/>
+        <rect x="1066" y="100" width="28" height="60"/>
+        <rect x="1100" y="44" width="46" height="116"/>
+        <rect x="1152" y="84" width="48" height="76"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- the living seam -->
+  <div class="seam-wrap" id="seamMove"><div class="seam"></div></div>
+
+  <nav class="hero-nav" aria-label="Primary">
+    <a class="wordmark" href="#top">ferreirademelo.com</a>
+    <ul>
+      <li><a href="#top">Index</a></li>
+      <li><a href="#notes">Notes</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-copy">
+    <h1><span class="ph">Duas cidades.</span> <span class="ph">Två städer.</span> <span class="ph">One notebook.</span></h1>
+    <p class="hero-sub">Notes written between São Paulo and Stockholm — on data, design and the public good.</p>
+  </div>
+
+  <p class="scroll-cue" aria-hidden="true">&#8595; 10&#8239;947 km</p>
+</header>
+
+<!-- ================= CONTENT ================= -->
+<main class="content" id="content">
+  <div class="veil" aria-hidden="true"></div>
+
+  <div class="rail" aria-hidden="true">
+    <div class="rail-line"></div>
+    <div class="plane" id="plane">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M10 19 L3 6 L10 9.4 L17 6 Z" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+
+  <section class="sec-notes shell" id="notes" aria-labelledby="notes-h">
+    <span class="waypoint">GRU — DEPARTURE &#8722;23.55&#176;</span>
+    <div class="sec-head">
+      <span class="klabel">Anteckningar — Anota&#231;&#245;es</span>
+      <h2 id="notes-h">The notebook is the spine. Rough edges over polished silence.</h2>
+    </div>
+    <ul class="notes-list">
+      <li><a class="note" href="#">
+        <span class="date">2026&#8209;02&#8209;07</span>
+        <h3>Enclosures that actually snap shut</h3>
+        <p class="desc">Notes from the 3D print lab: tolerances, test fits, and three failed lids.</p>
+        <span class="chip chip-en">EN</span>
+      </a></li>
+      <li><a class="note" href="#">
+        <span class="date">2026&#8209;01&#8209;18</span>
+        <h3>Att fotografera vinterljuset</h3>
+        <p class="desc">Om det l&#229;ga ljuset i januari och varf&#246;r kameran alltid f&#246;ljer med.</p>
+        <span class="chip chip-sv">SV</span>
+      </a></li>
+      <li><a class="note" href="#">
+        <span class="date">2025&#8209;12&#8209;02</span>
+        <h3>Att bygga en familjebudget i Streamlit</h3>
+        <p class="desc">CSV-exporter fr&#229;n svenska banker — alla konton i en vy.</p>
+        <span class="chip chip-sv">SV</span>
+      </a></li>
+      <li><a class="note" href="#">
+        <span class="date">2025&#8209;11&#8209;14</span>
+        <h3>What &#8216;transparent AI&#8217; means in a public agency</h3>
+        <p class="desc">Explainability is a design problem before it is a model problem.</p>
+        <span class="chip chip-en">EN</span>
+      </a></li>
+      <li><a class="note" href="#">
+        <span class="date">2025&#8209;10&#8209;30</span>
+        <h3>Hello world — why this notebook exists</h3>
+        <p class="desc">Opening the notebook: rough edges over polished silence.</p>
+        <span class="chip chip-en">EN</span>
+      </a></li>
+    </ul>
+  </section>
+
+  <section class="sec-about shell" id="about" aria-labelledby="about-h">
+    <span class="waypoint">CRUISING — 10&#8239;400 m</span>
+    <div class="sec-head">
+      <span class="klabel">Entre dois mundos — mellan tv&#229; v&#228;rldar</span>
+      <h2 id="about-h" class="visually-plain" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">About</h2>
+    </div>
+    <div class="about-grid">
+      <blockquote class="pull">
+        <span class="q-sth">&#8220;Sweden is home now,</span> <span class="q-sp">and Brazil will always be the other.&#8221;</span>
+        <cite>ALBERTO FERREIRA DE MELO</cite>
+      </blockquote>
+      <div class="bio">
+        <p>Alberto works at the intersection of data, design and public service, with one stubborn focus: making AI transparent, humane and genuinely useful for the people it is supposed to serve.</p>
+        <p>He writes in English and Swedish — about explainability in public agencies, family budgets built from bank CSVs, January light, and enclosures that finally snap shut. The working rule of this notebook: <span class="voice">show process, not polish.</span></p>
+        <p>Off hours it is photography, 3D printing and small electronics — usually with a camera in the bag and a coffee within reach.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec-work shell" id="workbench" aria-labelledby="work-h">
+    <span class="waypoint">ARN — ARRIVAL 59.33&#176;</span>
+    <div class="sec-head">
+      <span class="klabel">Workbench</span>
+      <h2 id="work-h" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Workbench</h2>
+    </div>
+    <div class="stub" role="note">
+      <span class="tag">Carry&#8209;on</span>
+      <span class="cargo">budgetapp / this website / 3d&#8209;print lab — no dates, packed light</span>
+    </div>
+  </section>
+</main>
+
+<!-- ================= FOOTER : the landing ================= -->
+<footer>
+  <svg class="footer-skyline" viewBox="0 0 2400 160" preserveAspectRatio="none" aria-hidden="true">
+    <use href="#sthline"></use>
+    <use href="#sthline" x="1200"></use>
+  </svg>
+  <div class="landing">
+    <div class="shell">
+      <div class="foot-row">
+        <span class="copy">&#169; 2026 Alberto Ferreira de Melo</span>
+        <ul class="foot-links">
+          <li><a href="#">GitHub</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">RSS</a></li>
+        </ul>
+      </div>
+      <p class="arrival-note">ARN 59.33&#176;N 18.07&#176;E — t&#228;nd kabinbelysningen. Welcome home, either way.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var rm = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var root = document.documentElement;
+
+  /* ---------- living seam ---------- */
+  var spMove = document.getElementById("spMove");
+  var seamMove = document.getElementById("seamMove");
+  var pointerX = 0;      /* -0.5 .. 0.5 */
+  var cur = 0;
+
+  function onMove(e){
+    pointerX = (e.clientX / window.innerWidth) - 0.5;
+  }
+  function onTouch(e){
+    if(e.touches && e.touches.length){
+      pointerX = (e.touches[0].clientX / window.innerWidth) - 0.5;
+    }
+  }
+  window.addEventListener("pointermove", onMove, {passive:true});
+  window.addEventListener("touchmove", onTouch, {passive:true});
+
+  function seamLoop(t){
+    /* only spend frames while hero is on screen */
+    if(window.scrollY < window.innerHeight * 1.2){
+      var drift = Math.sin(t / 7000) * 0.025;
+      var target = Math.max(-0.12, Math.min(0.12, pointerX * 0.24 + drift));
+      cur += (target - cur) * 0.06;
+      var px = cur * window.innerWidth;
+      var tf = "translate3d(" + px.toFixed(2) + "px,0,0)";
+      spMove.style.transform = tf;
+      seamMove.style.transform = tf;
+    }
+    requestAnimationFrame(seamLoop);
+  }
+  if(!rm.matches){ requestAnimationFrame(seamLoop); }
+
+  /* ---------- journey var + flight plane ---------- */
+  var content = document.getElementById("content");
+  var plane = document.getElementById("plane");
+  var lastJ = -1;
+  var ticking = false;
+
+  function journeyFrame(){
+    ticking = false;
+    var rect = content.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var total = rect.height - vh * 0.4;
+    var p = (vh * 0.7 - rect.top) / (total > 0 ? total : 1);
+    p = Math.max(0, Math.min(1, p));
+    var j = Math.round(p * 1000) / 1000;
+    if(j !== lastJ){
+      root.style.setProperty("--journey", j);
+      lastJ = j;
+    }
+    if(plane && !rm.matches){
+      var railH = rect.height - 112 - 20; /* line insets + plane */
+      plane.style.transform = "translate(-50%," + (p * railH).toFixed(1) + "px)";
+    }
+  }
+  function onScroll(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(journeyFrame);
+    }
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll, {passive:true});
+  onScroll();
+
+  /* ---------- note card tilt toward cursor side ---------- */
+  var notes = document.querySelectorAll(".note");
+  for(var i = 0; i < notes.length; i++){
+    (function(card){
+      card.addEventListener("pointermove", function(e){
+        if(rm.matches || e.pointerType === "touch"){ return; }
+        var r = card.getBoundingClientRect();
+        var side = (e.clientX - r.left) < r.width / 2 ? -1 : 1;
+        card.style.transform = "translateY(-3px) rotate(" + (side * 0.6) + "deg)";
+      }, {passive:true});
+      card.addEventListener("pointerleave", function(){
+        card.style.transform = "";
+      }, {passive:true});
+    })(notes[i]);
+  }
+})();
+</script>
+</body>
+</html>
