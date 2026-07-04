@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 3 — Norrsken 3D</title>
+</head>
+<body>
+<style>
+  /* Deliberately single-theme: a dark arctic-sky scene (norrsken = northern lights). */
+  :root {
+    --sky-0: #070b18;
+    --sky-1: #0d1430;
+    --glass: rgba(20, 30, 58, 0.55);
+    --glass-edge: rgba(140, 190, 255, 0.22);
+    --ink: #e9eefc;
+    --muted: #93a0c4;
+    --aurora-a: #52e8c4;
+    --aurora-b: #7f7bf5;
+    --aurora-c: #e569b8;
+    --display: 'Avenir Next', Futura, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    --mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, var(--sky-0) 0%, var(--sky-1) 55%, #101a3e 100%);
+    color: var(--ink);
+    font-family: var(--display);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible { outline: 2px solid var(--aurora-a); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- aurora backdrop ---------- */
+  .aurora {
+    position: fixed;
+    inset: -20% -10%;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(60px) saturate(1.2);
+    opacity: 0.55;
+  }
+  .aurora i {
+    position: absolute;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+  }
+  .aurora i:nth-child(1) { width: 55vw; height: 30vh; left: 8%;  top: 6%;  background: var(--aurora-a); animation: drift1 19s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2) { width: 45vw; height: 26vh; right: 4%; top: 14%; background: var(--aurora-b); animation: drift2 23s ease-in-out infinite alternate; }
+  .aurora i:nth-child(3) { width: 35vw; height: 22vh; left: 32%; top: 2%;  background: var(--aurora-c); opacity: 0.6; animation: drift3 27s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(6vw, 5vh) scaleY(1.25); } }
+  @keyframes drift2 { to { transform: translate(-7vw, 3vh) scaleY(0.85); } }
+  @keyframes drift3 { to { transform: translate(4vw, 7vh) scaleX(1.2); } }
+
+  /* star field */
+  .stars {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 12% 22%, #fff8 0, transparent 100%),
+      radial-gradient(1px 1px at 68% 12%, #fff7 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 42% 38%, #fff6 0, transparent 100%),
+      radial-gradient(1px 1px at 85% 44%, #fff8 0, transparent 100%),
+      radial-gradient(1px 1px at 25% 64%, #fff5 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 58% 78%, #fff6 0, transparent 100%),
+      radial-gradient(1px 1px at 90% 82%, #fff7 0, transparent 100%),
+      radial-gradient(1px 1px at 5% 90%, #fff6 0, transparent 100%);
+  }
+
+  /* perspective grid floor */
+  .floor {
+    position: fixed;
+    left: 50%; bottom: -12vh;
+    width: 240vw; height: 70vh;
+    transform: translateX(-50%) perspective(600px) rotateX(72deg);
+    transform-origin: 50% 100%;
+    background:
+      linear-gradient(transparent 0%, rgba(82, 232, 196, 0.06) 100%),
+      repeating-linear-gradient(90deg, rgba(127, 123, 245, 0.18) 0 1px, transparent 1px 80px),
+      repeating-linear-gradient(0deg,  rgba(127, 123, 245, 0.18) 0 1px, transparent 1px 80px);
+    mask-image: linear-gradient(transparent 0%, #000 60%);
+    -webkit-mask-image: linear-gradient(transparent 0%, #000 60%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 66rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ---------- nav ---------- */
+  nav.main {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 1.5rem 0; flex-wrap: wrap;
+  }
+  .wordmark { font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.06em; color: var(--muted); }
+  .wordmark b { color: var(--ink); font-weight: 600; }
+  nav.main .links { display: flex; gap: 1.8rem; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  nav.main .links a { color: var(--muted); transition: color 0.2s, text-shadow 0.2s; }
+  nav.main .links a:hover, nav.main .links a[aria-current="page"] {
+    color: var(--aurora-a);
+    text-shadow: 0 0 18px rgba(82, 232, 196, 0.7);
+  }
+
+  /* ---------- 3D hero ---------- */
+  .stage {
+    perspective: 1100px;
+    padding: 5rem 0 4rem;
+  }
+  .scene {
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  .scene .kicker {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--aurora-a);
+    transform: translateZ(30px);
+  }
+  .scene h1 {
+    margin: 0;
+    font-size: clamp(2.6rem, 8vw, 5.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    text-wrap: balance;
+    transform: translateZ(80px);
+    background: linear-gradient(100deg, var(--aurora-a), var(--aurora-b) 45%, var(--aurora-c));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 10px 40px rgba(127, 123, 245, 0.35));
+  }
+  .scene .sub {
+    max-width: 46ch;
+    color: var(--muted);
+    font-size: 1.05rem;
+    transform: translateZ(50px);
+    margin: 1rem 0 0;
+  }
+  .scene .ghost-name {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: clamp(2.6rem, 8vw, 5.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(140, 190, 255, 0.18);
+    transform: translateZ(-60px) scale(1.12);
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-inner { position: relative; padding: 1rem 0; }
+  .scene .cta {
+    margin-top: 2.2rem;
+    transform: translateZ(60px);
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sky-0);
+    background: linear-gradient(90deg, var(--aurora-a), var(--aurora-b));
+    padding: 0.85rem 1.8rem;
+    border-radius: 999px;
+    box-shadow: 0 0 40px rgba(82, 232, 196, 0.35);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .scene .cta:hover { box-shadow: 0 0 60px rgba(82, 232, 196, 0.6); transform: translateZ(60px) scale(1.04); }
+
+  /* ---------- section labels ---------- */
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 4rem 0 2rem;
+  }
+  .sec-label::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--glass-edge), transparent); }
+
+  /* ---------- floating note cards ---------- */
+  .deck { perspective: 1000px; }
+  .deck-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1.6rem;
+    transform-style: preserve-3d;
+  }
+  .card3d {
+    background: var(--glass);
+    border: 1px solid var(--glass-edge);
+    border-radius: 16px;
+    padding: 1.6rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.3s;
+    animation: float 7s ease-in-out infinite;
+  }
+  .card3d:nth-child(2) { animation-delay: -2.3s; }
+  .card3d:nth-child(3) { animation-delay: -4.6s; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotateX(0deg); }
+    50% { transform: translateY(-10px) rotateX(1.5deg); }
+  }
+  .card3d:hover {
+    animation-play-state: paused;
+    transform: translateY(-12px) rotateX(4deg) rotateY(-3deg) scale(1.02);
+    border-color: rgba(82, 232, 196, 0.5);
+    box-shadow: 0 30px 60px rgba(4, 8, 20, 0.6), 0 0 40px rgba(82, 232, 196, 0.12);
+  }
+  .card3d .meta { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); }
+  .card3d .meta .lang { color: var(--aurora-a); }
+  .card3d h3 { margin: 0; font-size: 1.18rem; font-weight: 600; line-height: 1.3; }
+  .card3d p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+  .card3d .go { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--aurora-b); }
+
+  /* ---------- project monoliths ---------- */
+  .monoliths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.6rem;
+    perspective: 900px;
+  }
+  .monolith {
+    position: relative;
+    border-radius: 16px;
+    padding: 1.8rem 1.6rem 1.6rem;
+    min-height: 13rem;
+    display: grid;
+    align-content: end;
+    gap: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--glass-edge);
+    background: var(--glass);
+    transform: rotateY(0deg);
+    transition: transform 0.35s ease, border-color 0.35s;
+  }
+  .monolith::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, var(--tint) 0%, transparent 55%);
+    opacity: 0.35;
+    transition: opacity 0.35s;
+  }
+  .monolith:nth-child(1) { --tint: var(--aurora-a); }
+  .monolith:nth-child(2) { --tint: var(--aurora-b); }
+  .monolith:nth-child(3) { --tint: var(--aurora-c); }
+  .monolith:hover { transform: rotateY(-6deg) rotateX(3deg) translateY(-6px); border-color: var(--tint); }
+  .monolith:hover::before { opacity: 0.6; }
+  .monolith .status { position: relative; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--tint); }
+  .monolith h3 { position: relative; margin: 0; font-size: 1.3rem; font-weight: 600; }
+  .monolith p { position: relative; margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+  /* ---------- about strip ---------- */
+  .about {
+    margin: 4.5rem 0;
+    padding: 2.2rem;
+    border-radius: 16px;
+    border: 1px solid var(--glass-edge);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: grid;
+    gap: 0.8rem;
+    max-width: 44rem;
+  }
+  .about p { margin: 0; color: var(--muted); }
+  .about p b { color: var(--ink); font-weight: 600; }
+  .coords { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.15em; color: var(--aurora-a); }
+
+  footer.site {
+    position: relative; z-index: 1;
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+  }
+  footer.site a { color: var(--aurora-b); }
+  footer.site a:hover { text-shadow: 0 0 14px rgba(127, 123, 245, 0.8); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora i, .card3d { animation: none !important; }
+    .scene, .card3d, .monolith, .cta { transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="stars" aria-hidden="true"></div>
+<div class="floor" aria-hidden="true"></div>
+
+<div class="wrap">
+  <nav class="main" aria-label="Main">
+    <span class="wordmark"><b>alberto</b>@ferreirademelo.com:~$</span>
+    <div class="links">
+      <a href="#" aria-current="page">Home</a>
+      <a href="#notes">Notes</a>
+      <a href="#projects">Projects</a>
+      <a href="#about">About</a>
+    </div>
+  </nav>
+
+  <section class="stage" aria-label="Intro">
+    <div class="scene" id="scene">
+      <div class="hero-inner">
+        <span class="ghost-name" aria-hidden="true">FERREIRA DE MELO</span>
+        <p class="kicker">59.33° N — a notebook under the northern lights</p>
+        <h1>Alberto<br>Ferreira de Melo</h1>
+        <p class="sub">Data, design and public service. Ideas published while they're still glowing — notes, experiments and half-built machines, from São Paulo to Stockholm.</p>
+        <a class="cta" href="#notes">Enter the notebook ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <p class="sec-label" id="notes">Latest notes</p>
+  <section class="deck" aria-label="Latest notes">
+    <div class="deck-inner">
+      <a class="card3d" href="#">
+        <div class="meta"><span>2025-10-30</span><span class="lang">EN</span></div>
+        <h3>Hello world — why this notebook exists</h3>
+        <p>Opening transmission: why rough edges beat polished silence.</p>
+        <span class="go">read →</span>
+      </a>
+      <a class="card3d" href="#">
+        <div class="meta"><span>2025-11-14</span><span class="lang">EN</span></div>
+        <h3>Transparent AI in a public agency</h3>
+        <p>Explainability is a design problem long before it's a model problem.</p>
+        <span class="go">read →</span>
+      </a>
+      <a class="card3d" href="#">
+        <div class="meta"><span>2025-12-02</span><span class="lang">SV</span></div>
+        <h3>Att bygga en familjebudget i Streamlit</h3>
+        <p>CSV-exporter från svenska banker — alla konton i en enda vy.</p>
+        <span class="go">läs →</span>
+      </a>
+    </div>
+  </section>
+
+  <p class="sec-label" id="projects">Projects &amp; experiments</p>
+  <section class="monoliths" aria-label="Projects">
+    <a class="monolith" href="#">
+      <span class="status">In progress</span>
+      <h3>BudgetApp</h3>
+      <p>Streamlit tool that ingests Swedish bank exports and maps the whole family budget.</p>
+    </a>
+    <a class="monolith" href="#">
+      <span class="status">In progress</span>
+      <h3>Personal webpage</h3>
+      <p>This site — learning Astro in public, one deploy at a time.</p>
+    </a>
+    <a class="monolith" href="#">
+      <span class="status">Workbench</span>
+      <h3>3D print lab</h3>
+      <p>Functional prints and enclosures for small electronics experiments.</p>
+    </a>
+  </section>
+
+  <section class="about" id="about" aria-label="About">
+    <span class="coords">-23.55° S → 59.33° N</span>
+    <p><b>I work at the intersection of data, design and public service.</b> My focus is making AI transparent, humane and genuinely useful.</p>
+    <p>Sweden is home now, and Brazil will always be the other. Outside of work: photography, 3D printing and small electronics. Curiosity connects it all.</p>
+  </section>
+</div>
+
+<footer class="site">
+  © 2026 Alberto Ferreira de Melo · <a href="#">github</a> · <a href="#">linkedin</a> · <a href="#">rss</a>
+</footer>
+
+<script>
+  // Mouse-driven parallax tilt on the hero scene, with lerp smoothing.
+  (function () {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var scene = document.getElementById('scene');
+    if (!scene) return;
+    var tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+    function tick() {
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      scene.style.transform = 'rotateX(' + cy.toFixed(3) + 'deg) rotateY(' + cx.toFixed(3) + 'deg)';
+      if (Math.abs(tx - cx) > 0.01 || Math.abs(ty - cy) > 0.01) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+      }
+    }
+    addEventListener('pointermove', function (e) {
+      var nx = e.clientX / innerWidth - 0.5;
+      var ny = e.clientY / innerHeight - 0.5;
+      tx = nx * 10;       // rotateY: left/right
+      ty = ny * -8;       // rotateX: up/down
+      if (!raf) raf = requestAnimationFrame(tick);
+    }, { passive: true });
+  })();
+</script>
+</body>
+</html>

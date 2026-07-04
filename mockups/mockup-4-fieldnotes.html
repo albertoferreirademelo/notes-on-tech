@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 4 — Fältanteckningar</title>
+</head>
+<body>
+<style>
+  :root {
+    --paper: #f2efe6;
+    --paper-2: #faf8f1;
+    --dot: #d4cfbf;
+    --ink: #23395b;          /* fountain-pen blue-black */
+    --graphite: #6d6a5f;
+    --redpen: #b3402e;
+    --highlight: #ffe873;
+    --tape: rgba(226, 217, 180, 0.7);
+    --rule: #cfc9b6;
+    --serif: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, Georgia, serif;
+    --mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+    --hand: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #211f1a;
+      --paper-2: #2a2822;
+      --dot: #3a382f;
+      --ink: #a8c3e8;
+      --graphite: #96917f;
+      --redpen: #e0705c;
+      --highlight: #5d5426;
+      --tape: rgba(90, 84, 60, 0.6);
+      --rule: #454236;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #211f1a; --paper-2: #2a2822; --dot: #3a382f; --ink: #a8c3e8;
+    --graphite: #96917f; --redpen: #e0705c; --highlight: #5d5426;
+    --tape: rgba(90, 84, 60, 0.6); --rule: #454236;
+  }
+  :root[data-theme="light"] {
+    --paper: #f2efe6; --paper-2: #faf8f1; --dot: #d4cfbf; --ink: #23395b;
+    --graphite: #6d6a5f; --redpen: #b3402e; --highlight: #ffe873;
+    --tape: rgba(226, 217, 180, 0.7); --rule: #cfc9b6;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+    color: var(--graphite);
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+  a { color: var(--ink); text-decoration: none; }
+  a:focus-visible { outline: 2px dashed var(--redpen); outline-offset: 3px; }
+
+  .page {
+    max-width: 46rem;
+    margin: 2.5rem auto 4rem;
+    padding: 0 1.5rem;
+    position: relative;
+  }
+
+  .mono-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--graphite);
+  }
+
+  /* ---- header: journal cover line ---- */
+  header.journal {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+  .journal-title { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); }
+  nav.toc { display: flex; gap: 1.4rem; font-family: var(--mono); font-size: 0.78rem; }
+  nav.toc a { color: var(--graphite); border-bottom: 1px dotted var(--graphite); padding-bottom: 1px; }
+  nav.toc a:hover, nav.toc a[aria-current="page"] { color: var(--ink); border-bottom: 1px solid var(--ink); }
+  .entry-line {
+    display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--graphite);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.35rem 0 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  /* ---- hero entry ---- */
+  .entry h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    color: var(--ink);
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.2;
+    margin: 0 0 1.4rem;
+    text-wrap: balance;
+  }
+  .entry h1 .edit { position: relative; white-space: nowrap; }
+  .entry h1 .edit del { text-decoration-color: var(--redpen); text-decoration-thickness: 2px; color: var(--graphite); font-weight: 400; }
+  .entry h1 .edit ins {
+    text-decoration: none;
+    color: var(--redpen);
+    font-family: var(--hand);
+    font-size: 0.75em;
+    position: relative;
+    top: -0.5em;
+    margin-left: 0.15em;
+  }
+  .entry .lead { max-width: 58ch; margin: 0 0 1rem; }
+  .entry .lead mark {
+    background: linear-gradient(transparent 35%, var(--highlight) 35%, var(--highlight) 92%, transparent 92%);
+    color: inherit;
+    padding: 0 0.15em;
+  }
+
+  /* margin note */
+  .marginalia {
+    font-family: var(--hand);
+    color: var(--redpen);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    transform: rotate(-2deg);
+    max-width: 11rem;
+  }
+  @media (min-width: 72rem) {
+    .marginalia.float { position: absolute; right: -12.5rem; }
+  }
+  @media (max-width: 71.99rem) {
+    .marginalia.float { margin: 1.2rem 0; }
+  }
+
+  /* stamp */
+  .stamp {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--redpen);
+    border: 2.5px double var(--redpen);
+    border-radius: 6px;
+    padding: 0.35rem 0.8rem;
+    transform: rotate(-4deg);
+    opacity: 0.85;
+    margin: 1.2rem 0 0;
+    user-select: none;
+  }
+
+  /* ---- section headers ---- */
+  h2.sec {
+    font-family: var(--serif);
+    color: var(--ink);
+    font-size: 1.4rem;
+    margin: 3.5rem 0 0.3rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+  }
+  h2.sec .sv { font-family: var(--hand); font-size: 0.85rem; color: var(--graphite); font-weight: 400; }
+  .sec-rule { border: none; border-top: 1px solid var(--rule); margin: 0 0 1.6rem; }
+
+  /* ---- note entries: ledger style ---- */
+  .entries { list-style: none; margin: 0; padding: 0; }
+  .entries li { border-bottom: 1px dotted var(--rule); }
+  .entries a {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr) auto;
+    gap: 1.2rem;
+    align-items: baseline;
+    padding: 1.1rem 0.4rem;
+    transition: background 0.15s;
+  }
+  .entries a:hover { background: var(--paper-2); }
+  @media (max-width: 40rem) { .entries a { grid-template-columns: 1fr; gap: 0.3rem; } }
+  .entries .date { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; color: var(--graphite); }
+  .entries .title { color: var(--ink); font-weight: 700; }
+  .entries .title small { display: block; font-weight: 400; color: var(--graphite); font-size: 0.88rem; margin-top: 0.15rem; }
+  .entries .lang { font-family: var(--mono); font-size: 0.7rem; color: var(--redpen); letter-spacing: 0.15em; }
+
+  /* ---- projects: index cards with tape ---- */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr)); gap: 1.8rem; margin-top: 0.5rem; }
+  .card {
+    position: relative;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    box-shadow: 2px 3px 8px rgba(35, 40, 60, 0.08);
+    padding: 1.4rem 1.3rem 1.3rem;
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    transition: transform 0.15s;
+  }
+  .card:nth-child(odd) { transform: rotate(-0.7deg); }
+  .card:nth-child(even) { transform: rotate(0.6deg); }
+  .card:hover { transform: rotate(0deg) translateY(-3px); }
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -10px; left: 50%;
+    width: 84px; height: 22px;
+    transform: translateX(-50%) rotate(-1.5deg);
+    background: var(--tape);
+    box-shadow: 0 1px 2px rgba(35, 40, 60, 0.12);
+  }
+  .card .status { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--redpen); }
+  .card h3 { margin: 0; color: var(--ink); font-size: 1.15rem; }
+  .card p { margin: 0; font-size: 0.92rem; }
+
+  /* ---- now / about block ---- */
+  .now {
+    margin-top: 3.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  @media (max-width: 44rem) { .now { grid-template-columns: 1fr; } }
+  .now p { margin: 0 0 0.9rem; max-width: 54ch; }
+  .todo { list-style: none; margin: 0.4rem 0 0; padding: 0; display: grid; gap: 0.55rem; font-size: 0.95rem; }
+  .todo li { display: flex; gap: 0.7rem; align-items: baseline; }
+  .todo .box {
+    font-family: var(--mono);
+    color: var(--ink);
+    flex: 0 0 auto;
+  }
+  .todo li.done .box { color: var(--redpen); }
+  .todo li.done span:last-child { text-decoration: line-through; text-decoration-color: var(--redpen); color: var(--graphite); }
+
+  footer.journal {
+    margin-top: 4rem;
+    border-top: 2px solid var(--ink);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--graphite);
+  }
+  footer.journal .links { display: flex; gap: 1.4rem; }
+  footer.journal a { color: var(--graphite); border-bottom: 1px dotted var(--graphite); }
+  footer.journal a:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="page">
+  <header class="journal">
+    <span class="journal-title">Fältanteckningar — A. Ferreira de Melo</span>
+    <nav class="toc" aria-label="Main">
+      <a href="#" aria-current="page">index</a>
+      <a href="#">notes</a>
+      <a href="#">projects</a>
+      <a href="#">about</a>
+    </nav>
+  </header>
+  <div class="entry-line">
+    <span>ENTRY Nº 001 — INDEX</span>
+    <span>STOCKHOLM · 59.33°N 18.07°E</span>
+    <span>EN / SV / PT</span>
+  </div>
+
+  <section class="entry" aria-label="Introduction">
+    <p class="marginalia float">skriv varje vecka!<br>← even the rough ones</p>
+    <h1>The working notebook of Alberto Ferreira de Melo — ideas
+      <span class="edit"><del>polished</del><ins>in progress</ins></span>
+    </h1>
+    <p class="lead">
+      I work at the intersection of data, design and public service, with a focus on making
+      AI <mark>transparent, humane and genuinely useful</mark>. This site holds the things that
+      sit between thinking and making — notes, small experiments, occasional essays.
+    </p>
+    <p class="lead">The goal is to show process, not polish.</p>
+    <span class="stamp">Arbete pågår · Est. 2025</span>
+  </section>
+
+  <h2 class="sec" id="notes">Latest notes <span class="sv">/ senaste anteckningar</span></h2>
+  <hr class="sec-rule">
+  <ul class="entries">
+    <li>
+      <a href="#">
+        <span class="date">2025-10-30</span>
+        <span class="title">Hello world — why this notebook exists
+          <small>Opening the notebook: rough edges over polished silence.</small>
+        </span>
+        <span class="lang">EN</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <span class="date">2025-11-14</span>
+        <span class="title">What "transparent AI" means in a public agency
+          <small>Explainability is a design problem before it is a model problem.</small>
+        </span>
+        <span class="lang">EN</span>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <span class="date">2025-12-02</span>
+        <span class="title">Att bygga en familjebudget i Streamlit
+          <small>CSV-exporter från svenska banker — alla konton i en vy.</small>
+        </span>
+        <span class="lang">SV</span>
+      </a>
+    </li>
+  </ul>
+
+  <h2 class="sec" id="projects">On the workbench <span class="sv">/ på arbetsbänken</span></h2>
+  <hr class="sec-rule">
+  <div class="cards">
+    <a class="card" href="#">
+      <span class="status">In progress</span>
+      <h3>BudgetApp</h3>
+      <p>Streamlit tool that reads Swedish bank CSV exports and connects every account into one budget view.</p>
+    </a>
+    <a class="card" href="#">
+      <span class="status">In progress</span>
+      <h3>Personal webpage</h3>
+      <p>This notebook itself — built with Astro, one entry at a time.</p>
+    </a>
+    <a class="card" href="#">
+      <span class="status">Workbench</span>
+      <h3>3D print lab</h3>
+      <p>Functional prints and enclosures for small electronics. Failures documented too.</p>
+    </a>
+  </div>
+
+  <section class="now" aria-label="About and now">
+    <div>
+      <h2 class="sec" style="margin-top:0">About <span class="sv">/ om mig</span></h2>
+      <hr class="sec-rule">
+      <p>Sweden is home now, and Brazil will always be the other. I write in English and Swedish, document side projects, and share ideas before they are fully formed.</p>
+      <p>Outside of work: photography, 3D printing, small electronics. Curiosity connects it all.</p>
+    </div>
+    <div>
+      <h2 class="sec" style="margin-top:0">Now <span class="sv">/ just nu</span></h2>
+      <hr class="sec-rule">
+      <ul class="todo">
+        <li class="done"><span class="box">[x]</span><span>Set up the notebook (Astro)</span></li>
+        <li><span class="box">[ ]</span><span>BudgetApp: connect all accounts</span></li>
+        <li><span class="box">[ ]</span><span>Write the transparent-AI essay</span></li>
+        <li><span class="box">[ ]</span><span>Print a new enclosure for the sensor rig</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="journal">
+    <span>© 2026 A. Ferreira de Melo — ferreirademelo.com</span>
+    <span class="links"><a href="#">github</a><a href="#">linkedin</a><a href="#">rss</a></span>
+  </footer>
+</div>
+</body>
+</html>
