@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "astro build && gh-pages -d dist --dotfiles"
   },
   "dependencies": {
     "@fontsource-variable/bodoni-moda": "^5.2.7",
