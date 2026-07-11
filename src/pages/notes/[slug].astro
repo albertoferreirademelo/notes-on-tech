@@ -3,9 +3,9 @@ import { getCollection } from 'astro:content';
 import PersonalLayout from '../../layouts/PersonalLayout.astro';
 
 export async function getStaticPaths() {
-  const notes = (await getCollection('notes')).sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-  );
+  const notes = (await getCollection('notes'))
+    .filter((n) => import.meta.env.DEV || !n.data.draft)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
   // The list is newest-first, so index+1 is the older note.
   return notes.map((note, i) => ({
     params: { slug: note.slug },
@@ -30,6 +30,19 @@ const language = (data.lang ?? 'en').toUpperCase();
 const isoDate = data.pubDate.toISOString().slice(0, 10);
 const words = body.split(/\s+/).filter(Boolean).length;
 const readMinutes = Math.max(1, Math.round(words / 200));
+
+// Innehållsdeklaration — how this note was made.
+const aiLabels: Record<string, string> = {
+  none: 'written by hand · no AI',
+  assisted: 'written by hand · AI-assisted drafting',
+  'ai-drafted': 'drafted with AI · edited by hand',
+};
+const declaration: string[] = [];
+declaration.push(data.ai ? aiLabels[data.ai] : 'not declared');
+declaration.push(`${words} words · ${language.toLowerCase()}`);
+if (data.revisions) declaration.push(`${data.revisions} ${data.revisions === 1 ? 'revision' : 'revisions'}`);
+if (data.tools?.length) declaration.push(`tools: ${data.tools.join(', ')}`);
+if (data.image) declaration.push('1 photograph (own)');
 ---
 <PersonalLayout
   current="notes"
@@ -45,6 +58,7 @@ const readMinutes = Math.max(1, Math.round(words / 200));
           <time datetime={data.pubDate.toISOString()}>{isoDate}</time>
           <span class="lang">{language}</span>
           <span>{readMinutes}&nbsp;min</span>
+          {data.draft && <span class="lang">UTKAST — DRAFT</span>}
         </p>
         <h1>{data.title}</h1>
         <p class="standfirst">{data.description}</p>
@@ -61,6 +75,13 @@ const readMinutes = Math.max(1, Math.round(words / 200));
       <div class="prose">
         <Content />
       </div>
+
+      <aside class="declaration" aria-label="Contents declaration">
+        <p class="declaration-title">Innehållsdeklaration &mdash; contents declaration</p>
+        <p class="declaration-body">{declaration.join('  ·  ')}</p>
+        <canvas class="signature" id="signature" width="600" height="56" aria-hidden="true"></canvas>
+        <p class="declaration-note">signatur &mdash; a line drawn from this note's own text</p>
+      </aside>
 
       {(newer || older) && (
         <nav class="pager" aria-label="Older and newer notes">
@@ -80,6 +101,58 @@ const readMinutes = Math.max(1, Math.round(words / 200));
       )}
     </article>
   </main>
+
+  <script is:inline id="sig-data" type="application/json" set:html={JSON.stringify({ text: body.slice(0, 4000), sv: (data.lang ?? 'en') === 'sv' })} />
+  <script is:inline>
+    // The signature: a pen line whose every movement comes from this note's
+    // own bytes. Same text, same signature — a fingerprint, not a flourish.
+    (function () {
+      var canvas = document.getElementById('signature');
+      var dataEl = document.getElementById('sig-data');
+      if (!canvas || !dataEl) return;
+      var payload;
+      try { payload = JSON.parse(dataEl.textContent); } catch (e) { return; }
+
+      function draw() {
+        var ctx = canvas.getContext('2d');
+        var cs = getComputedStyle(document.documentElement);
+        var ink = (payload.sv ? cs.getPropertyValue('--pen2') : cs.getPropertyValue('--line')).trim();
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var w = canvas.clientWidth || 600, h = 56;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = ink;
+        ctx.globalAlpha = 0.85;
+        ctx.lineWidth = 1;
+        ctx.lineJoin = 'round';
+        var text = payload.text;
+        var x = 2, y = h / 2, mid = h / 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        var stepX = (w - 4) / Math.max(1, text.length);
+        for (var i = 0; i < text.length; i++) {
+          var c = text.charCodeAt(i);
+          x += stepX;
+          // letters push the pen; spaces let it fall back toward the baseline
+          if (c === 32 || c === 10) y += (mid - y) * 0.3;
+          else y += Math.sin(c * 2.7) * 4.6 + (mid - y) * 0.045;
+          y = Math.max(4, Math.min(h - 4, y));
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      draw();
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+      if (mq.addEventListener) mq.addEventListener('change', draw);
+      new MutationObserver(function () { draw(); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      var rt;
+      window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(draw, 200); });
+    })();
+  </script>
 </PersonalLayout>
 
 <style>

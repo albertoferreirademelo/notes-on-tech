@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>skriv — ferreirademelo.com</title>
+<style>
+  :root{
+    --paper:#fbfaf6; --line:#16324f; --pen2:#c33d1f; --graphite:#7a776d;
+    --hair:#e3e1d9; --type:#16324f;
+    --serif:'Didot','Bodoni MT',Georgia,serif;
+    --body:Charter,'Bitstream Charter',Cambria,Georgia,serif;
+    --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#10151c; --line:#c7d6ea; --pen2:#e0563a; --graphite:#8a93a3; --hair:#26303e; --type:#edf1f7; }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--paper);color:var(--type);font-family:var(--body);display:flex;flex-direction:column;overflow:hidden}
+  button{font-family:var(--mono);background:none;border:1px solid var(--hair);color:var(--type);cursor:pointer;padding:.45rem .9rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+  button:hover{border-color:var(--pen2);color:var(--pen2)}
+  button:disabled{opacity:.4;cursor:default}
+  button.primary{border-color:var(--pen2);color:var(--pen2)}
+  input,select,textarea{font-family:var(--mono);background:transparent;border:none;border-bottom:1px solid var(--hair);color:var(--type);font-size:.85rem;padding:.35rem 0;width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pen2)}
+  label{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--graphite);display:block;margin:1rem 0 .1rem}
+
+  /* top bar with the plotter progress stroke */
+  header{border-bottom:1px solid var(--hair);padding:.8rem 1.2rem;display:flex;gap:1.2rem;align-items:baseline;flex-wrap:wrap;position:relative}
+  .wordmark{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em}
+  .wordmark b{color:var(--pen2);font-weight:400}
+  .branch{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--graphite);border:1px solid var(--hair);padding:.15rem .5rem}
+  .branch.warn{color:var(--pen2);border-color:var(--pen2)}
+  #saveState{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--graphite);margin-left:auto}
+  #stroke{position:absolute;left:0;right:0;bottom:-1px;height:3px;pointer-events:none}
+  #stroke line{stroke:var(--pen2);stroke-width:2}
+  #stroke circle{fill:var(--pen2)}
+
+  main{flex:1;display:grid;grid-template-columns:minmax(430px,44%) 1fr;min-height:0}
+
+  /* left: desk */
+  .desk{border-right:1px solid var(--hair);display:flex;flex-direction:column;min-height:0}
+  .notelist{border-bottom:1px solid var(--hair);max-height:9.5rem;overflow-y:auto;padding:.6rem 1.2rem}
+  .notelist a{display:flex;gap:.7rem;align-items:baseline;font-family:var(--mono);font-size:.72rem;padding:.28rem 0;color:var(--type);text-decoration:none;cursor:pointer}
+  .notelist a:hover .t{color:var(--pen2)}
+  .notelist .d{color:var(--graphite)}
+  .notelist .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chip{margin-left:auto;font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--hair);padding:.08rem .4rem;color:var(--graphite);flex:none}
+  .chip.draft{color:var(--pen2);border-color:var(--pen2)}
+  .chip.modified{color:var(--type);border-color:var(--graphite)}
+  .form{padding:0 1.2rem .6rem;overflow-y:auto}
+  .row{display:flex;gap:1.4rem}
+  .row>*{flex:1}
+  .row .narrow{flex:0 0 8.5rem}
+  #body{flex:1;border:none;border-top:1px solid var(--hair);margin-top:1rem;padding:1rem 1.2rem;font-size:.9rem;line-height:1.65;resize:none;min-height:0}
+  .deskfoot{border-top:1px solid var(--hair);padding:.7rem 1.2rem;display:flex;gap:.8rem;align-items:center}
+  .hint{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--graphite)}
+  #publishMsg{font-family:var(--mono);font-size:.66rem;line-height:1.5;color:var(--pen2);padding:0 1.2rem .6rem;white-space:pre-wrap;display:none}
+  #publishMsg.ok{color:var(--graphite)}
+  #publishMsg a{color:inherit}
+
+  /* right: the real page */
+  .previewpane{display:flex;flex-direction:column;min-height:0}
+  .previewbar{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--graphite);border-bottom:1px solid var(--hair);padding:.45rem 1.2rem;display:flex;justify-content:space-between;gap:1rem}
+  .previewbar a{color:var(--graphite)}
+  iframe{flex:1;border:none;width:100%;background:var(--paper)}
+  .drop{outline:2px dashed var(--pen2);outline-offset:-6px}
+</style>
+</head>
+<body>
+  <header>
+    <span class="wordmark"><b>skriv</b> — ferreirademelo.com</span>
+    <span class="branch" id="branch">…</span>
+    <button id="newBtn">ny anteckning</button>
+    <button id="publishBtn" class="primary">publicera →</button>
+    <span id="saveState"></span>
+    <svg id="stroke" preserveAspectRatio="none"></svg>
+  </header>
+
+  <main>
+    <section class="desk">
+      <nav class="notelist" id="notelist" aria-label="Notes"></nav>
+      <div class="form">
+        <div class="row">
+          <div><label id="l-title" for="title">Titel</label><input id="title" autocomplete="off"></div>
+          <div class="narrow"><label id="l-date" for="date">Datum</label><input id="date" type="date"></div>
+        </div>
+        <div class="row">
+          <div><label id="l-slug" for="slug">Slug</label><input id="slug" autocomplete="off" spellcheck="false"></div>
+          <div class="narrow"><label id="l-lang" for="lang">Språk</label>
+            <select id="lang"><option value="sv">svenska</option><option value="en">english</option></select>
+          </div>
+          <div class="narrow"><label id="l-ai" for="ai">Deklaration</label>
+            <select id="ai">
+              <option value="none">för hand · no AI</option>
+              <option value="assisted">AI-assisted</option>
+              <option value="ai-drafted">AI-drafted</option>
+            </select>
+          </div>
+        </div>
+        <label id="l-desc" for="desc">Beskrivning</label><input id="desc" autocomplete="off">
+      </div>
+      <textarea id="body" placeholder="…" spellcheck="true"></textarea>
+      <p id="publishMsg"></p>
+      <div class="deskfoot">
+        <span class="hint" id="l-hint">släpp eller klistra in en bild i texten så hamnar den rätt · drop or paste an image into the text</span>
+      </div>
+    </section>
+
+    <section class="previewpane">
+      <div class="previewbar">
+        <span id="l-preview">förhandsvisning — exakt som den publiceras</span>
+        <a id="previewLink" href="#" target="_blank">öppna i flik ↗</a>
+      </div>
+      <iframe id="preview" title="Live preview"></iframe>
+    </section>
+  </main>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { slug: null, prevSlug: null, devUrl: 'http://127.0.0.1:4321', dirty: false, publishing: false };
+
+  // ---- bilingual chrome: the editor follows the note's language --------
+  var L = {
+    sv: { title: 'Titel', date: 'Datum', slug: 'Slug', lang: 'Språk', ai: 'Deklaration', desc: 'Beskrivning',
+          neu: 'ny anteckning', pub: 'publicera →', saved: 'sparad', saving: 'sparar…',
+          preview: 'förhandsvisning — exakt som den publiceras', open: 'öppna i flik ↗',
+          hint: 'släpp eller klistra in en bild i texten så hamnar den rätt' },
+    en: { title: 'Title', date: 'Date', slug: 'Slug', lang: 'Language', ai: 'Declaration', desc: 'Description',
+          neu: 'new note', pub: 'publish →', saved: 'saved', saving: 'saving…',
+          preview: 'preview — exactly as it will publish', open: 'open in tab ↗',
+          hint: 'drop or paste an image into the text and it lands in the right folder' },
+  };
+  function applyLang() {
+    var t = L[$('lang').value] || L.sv;
+    $('l-title').textContent = t.title; $('l-date').textContent = t.date;
+    $('l-slug').textContent = t.slug; $('l-lang').textContent = t.lang;
+    $('l-ai').textContent = t.ai; $('l-desc').textContent = t.desc;
+    $('newBtn').textContent = t.neu; $('publishBtn').textContent = t.pub;
+    $('l-preview').textContent = t.preview; $('previewLink').textContent = t.open;
+    $('l-hint').textContent = t.hint;
+  }
+
+  // ---- slug from title (å ä ö é ç … → ascii) ---------------------------
+  function slugify(s) {
+    return s.toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[åä]/g, 'a').replace(/ö/g, 'o')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+  }
+  var slugTouched = false;
+  $('title').addEventListener('input', function () {
+    if (!slugTouched && !state.prevSlugLocked) { $('slug').value = slugify(this.value); }
+    queueSave();
+  });
+  $('slug').addEventListener('input', function () { slugTouched = true; queueSave(); });
+
+  // ---- load / save ------------------------------------------------------
+  function api(method, url, body) {
+    return fetch(url, {
+      method: method,
+      headers: body ? { 'content-type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
+  }
+
+  var saveTimer = null;
+  function queueSave() {
+    state.dirty = true;
+    $('saveState').textContent = (L[$('lang').value] || L.sv).saving;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 800);
+  }
+
+  function save() {
+    var slug = $('slug').value.trim();
+    if (!slug || !$('title').value.trim()) return;
+    var payload = {
+      prevSlug: state.slug,
+      fm: {
+        title: $('title').value.trim(),
+        description: $('desc').value.trim(),
+        pubDate: $('date').value,
+        lang: $('lang').value,
+        ai: $('ai').value,
+      },
+      body: $('body').value,
+    };
+    // keep an existing hero image field if the note had one
+    if (state.image) payload.fm.image = state.image;
+    if (state.revisions) payload.fm.revisions = state.revisions;
+    api('PUT', '/api/note/' + slug, payload).then(function () {
+      state.slug = slug;
+      state.dirty = false;
+      $('saveState').textContent = (L[$('lang').value] || L.sv).saved + ' ' + new Date().toTimeString().slice(0, 5);
+      setPreview(slug);
+      refreshList();
+    }).catch(function (e) {
+      $('saveState').textContent = '⚠ ' + e.message;
+    });
+  }
+
+  function loadNote(slug) {
+    api('GET', '/api/note/' + slug).then(function (n) {
+      state.slug = slug; state.image = n.fm.image; state.revisions = n.fm.revisions;
+      state.prevSlugLocked = !n.fm.draft; // published: don't auto-rewrite slug from title
+      slugTouched = true;
+      $('slug').value = slug;
+      $('slug').readOnly = !n.fm.draft; // renaming a live note breaks its URL
+      $('title').value = n.fm.title || '';
+      $('desc').value = n.fm.description || '';
+      $('date').value = String(n.fm.pubDate || '').slice(0, 10);
+      $('lang').value = n.fm.lang || 'en';
+      $('ai').value = n.fm.ai || 'none';
+      $('body').value = n.body || '';
+      applyLang();
+      setPreview(slug);
+      $('saveState').textContent = '';
+    });
+  }
+
+  function newNote() {
+    state.slug = null; state.image = null; state.revisions = null; state.prevSlugLocked = false;
+    slugTouched = false;
+    $('slug').readOnly = false;
+    $('title').value = ''; $('desc').value = ''; $('slug').value = '';
+    $('date').value = new Date().toISOString().slice(0, 10);
+    $('ai').value = 'none';
+    $('body').value = '';
+    $('preview').src = 'about:blank';
+    $('saveState').textContent = '';
+    applyLang();
+    $('title').focus();
+  }
+  $('newBtn').addEventListener('click', newNote);
+
+  ['desc', 'date', 'lang', 'ai', 'body'].forEach(function (id) {
+    $(id).addEventListener('input', queueSave);
+  });
+  $('lang').addEventListener('change', function () { applyLang(); queueSave(); });
+
+  function setPreview(slug) {
+    var url = state.devUrl + '/notes/' + slug + '/';
+    $('previewLink').href = url;
+    if ($('preview').src !== url) $('preview').src = url;
+  }
+
+  // ---- note list --------------------------------------------------------
+  function refreshList() {
+    api('GET', '/api/state').then(function (st) {
+      state.devUrl = st.devUrl;
+      var b = $('branch');
+      b.textContent = st.branch;
+      b.className = 'branch' + (st.branch === 'main' ? '' : ' warn');
+      var nl = $('notelist');
+      nl.innerHTML = '';
+      st.notes.forEach(function (n) {
+        var a = document.createElement('a');
+        var chip = n.draft ? 'draft · utkast' : (n.git === 'modified' ? 'edited' : 'live');
+        var cls = n.draft ? 'draft' : (n.git === 'modified' ? 'modified' : '');
+        a.innerHTML = '<span class="d">' + n.pubDate + '</span><span class="t">' + n.title +
+          '</span><span class="chip ' + cls + '">' + chip + '</span>';
+        a.addEventListener('click', function () { loadNote(n.slug); });
+        nl.appendChild(a);
+      });
+    });
+  }
+
+  // ---- images: drop or paste --------------------------------------------
+  function uploadImage(file) {
+    var slug = $('slug').value.trim();
+    if (!slug) { alert('Give the note a title first.'); return; }
+    var name = (file.name || 'pasted.png').replace(/\s+/g, '_');
+    fetch('/api/image/' + slug + '?name=' + encodeURIComponent(name) + '&date=' + $('date').value, {
+      method: 'POST', body: file,
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.error) throw new Error(j.error);
+      var ta = $('body');
+      var md = '\n![](' + j.path + ')\n';
+      if (!state.image) { state.image = j.path; } // first image becomes the hero
+      var pos = ta.selectionStart || ta.value.length;
+      ta.value = ta.value.slice(0, pos) + md + ta.value.slice(pos);
+      queueSave();
+    }).catch(function (e) { alert('Image failed: ' + e.message); });
+  }
+  var ta = $('body');
+  ta.addEventListener('dragover', function (e) { e.preventDefault(); ta.classList.add('drop'); });
+  ta.addEventListener('dragleave', function () { ta.classList.remove('drop'); });
+  ta.addEventListener('drop', function (e) {
+    e.preventDefault(); ta.classList.remove('drop');
+    Array.prototype.forEach.call(e.dataTransfer.files, uploadImage);
+  });
+  ta.addEventListener('paste', function (e) {
+    Array.prototype.forEach.call(e.clipboardData.items, function (it) {
+      if (it.kind === 'file') uploadImage(it.getAsFile());
+    });
+  });
+
+  // ---- publish: the plotter stroke ---------------------------------------
+  var STEPS = ['validate', 'branch', 'fetch', 'flip', 'rebase', 'add', 'commit', 'push', 'ci'];
+  function drawStroke(steps, failed, done) {
+    var svg = $('stroke');
+    var w = svg.clientWidth || 800;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' 3');
+    var doneCount = steps.filter(function (s) { return s.status === 'done'; }).length;
+    var frac = steps.length ? doneCount / STEPS.length : 0;
+    var x = Math.max(0, Math.round(w * frac));
+    var html = '<line x1="0" y1="1.5" x2="' + x + '" y2="1.5"></line>';
+    if (done) html += '<circle cx="' + (x - 4) + '" cy="1.5" r="2.6"></circle>'; // the pen lifts off
+    svg.innerHTML = html;
+    if (failed) svg.style.opacity = '0.55'; else svg.style.opacity = '1';
+  }
+
+  $('publishBtn').addEventListener('click', function () {
+    if (state.publishing) return;
+    var slug = $('slug').value.trim();
+    if (!slug) return;
+    if (state.dirty) save();
+    state.publishing = true;
+    $('publishBtn').disabled = true;
+    var msg = $('publishMsg');
+    msg.style.display = 'block'; msg.className = ''; msg.textContent = '';
+    api('POST', '/api/publish/' + slug).then(poll).catch(function (e) {
+      msg.textContent = e.message; finishPublish();
+    });
+  });
+
+  function finishPublish() {
+    state.publishing = false;
+    $('publishBtn').disabled = false;
+    refreshList();
+  }
+
+  function poll() {
+    api('GET', '/api/publish/status').then(function (st) {
+      var msg = $('publishMsg');
+      var current = st.steps.filter(function (s) { return s.status !== 'failed'; }).slice(-1)[0];
+      drawStroke(st.steps, !!st.error, !!st.liveUrl);
+      if (st.error) {
+        msg.className = ''; msg.textContent = st.error;
+        finishPublish();
+      } else if (st.liveUrl) {
+        msg.className = 'ok';
+        msg.innerHTML = 'live — <a href="' + st.liveUrl + '" target="_blank">' + st.liveUrl + '</a>';
+        finishPublish();
+      } else if (st.running) {
+        msg.className = 'ok'; msg.textContent = current ? current.label : '…';
+        setTimeout(poll, 1200);
+      } else {
+        finishPublish();
+      }
+    });
+  }
+
+  // ---- boot ---------------------------------------------------------------
+  $('date').value = new Date().toISOString().slice(0, 10);
+  applyLang();
+  refreshList();
+  fetch('/api/dev').then(function (r) { return r.json(); }).then(function (j) {
+    if (j.url) state.devUrl = j.url;
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

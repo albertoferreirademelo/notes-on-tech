@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "deploy": "astro build && gh-pages -d dist --dotfiles"
+    "skriv": "node tools/skriv/server.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bodoni-moda": "^5.2.7",

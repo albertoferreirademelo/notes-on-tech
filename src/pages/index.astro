@@ -2,47 +2,60 @@
 import { getCollection } from 'astro:content';
 import PersonalLayout from '../layouts/PersonalLayout.astro';
 
-const notes = (await getCollection('notes')).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
-const projects = (await getCollection('projects')).sort(
-  (a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime(),
-);
+const allNotes = (await getCollection('notes'))
+  .filter((n) => import.meta.env.DEV || !n.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
 const base = import.meta.env.BASE_URL || '/';
 const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
 const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${path}` : path);
-
 const isoDate = (d: Date) => d.toISOString().slice(0, 10);
-const languages = [...new Set(notes.map((n) => (n.data.lang ?? 'en').toLowerCase()))];
-const countWord = (n: number) => ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][n] ?? String(n);
-const indexLabel = `Index — ${countWord(notes.length)} note${notes.length === 1 ? '' : 's'}, ${countWord(languages.length)} language${languages.length === 1 ? '' : 's'}`;
+
+const wordCount = (body: string) => body.split(/\s+/).filter(Boolean).length;
+const languages = [...new Set(allNotes.map((n) => n.data.lang ?? 'en'))];
+const aiWords = allNotes
+  .filter((n) => n.data.ai && n.data.ai !== 'none')
+  .reduce((sum, n) => sum + wordCount(n.body), 0);
+const indexLabel = `Index — ${allNotes.length} ${allNotes.length === 1 ? 'note' : 'notes'} · ${languages.length} ${languages.length === 1 ? 'language' : 'languages'} · ${aiWords} AI-written words`;
 
 // Rows interleaved with a marker whenever the year changes (list is newest-first).
-const rows: Array<{ type: 'note'; note: (typeof notes)[number] } | { type: 'year'; year: number }> = [];
+const rows: Array<{ type: 'note'; note: (typeof allNotes)[number] } | { type: 'year'; year: number }> = [];
 let lastYear: number | null = null;
-for (const note of notes) {
+for (const note of allNotes) {
   const y = note.data.pubDate.getFullYear();
   if (lastYear !== null && y !== lastYear) rows.push({ type: 'year', year: y });
   rows.push({ type: 'note', note });
   lastYear = y;
 }
 
-// The workbench: projects demoted to a dateless strip, on purpose.
-const workbench = projects.map((p) => p.data.title.replace(/\s*\(.*\)\s*/, '').toLowerCase());
-const firstYear = notes.length ? Math.min(...notes.map((n) => n.data.pubDate.getFullYear())) : new Date().getFullYear();
+// The plot is the notebook's own record: one strand-cluster per note,
+// placed by date, sized by word count, inked by language. Deterministic —
+// it changes only when a note is published.
+const plotData = allNotes.map((n) => ({
+  t: n.data.pubDate.getTime(),
+  words: wordCount(n.body),
+  sv: (n.data.lang ?? 'en') === 'sv',
+  seed: n.slug,
+}));
+const svCount = plotData.filter((p) => p.sv).length;
+const firstYear = allNotes.length
+  ? Math.min(...allNotes.map((n) => n.data.pubDate.getFullYear()))
+  : new Date().getFullYear();
 ---
 <PersonalLayout current="index">
-  <section class="hero" id="hero" aria-label="Generative plotter drawing">
+  <section class="hero" id="hero" aria-label="A drawing generated from this notebook's notes">
     <canvas id="plot" aria-hidden="true"></canvas>
     <div class="wrap">
       <div class="masthead" id="masthead">
-        <p class="eyebrow">Anteckningar&nbsp;&mdash;&nbsp;Field recordings&nbsp;&mdash;&nbsp;Since {firstYear}</p>
+        <p class="eyebrow">Anteckningar</p>
         <h1>Ferreira<br />de&nbsp;Melo</h1>
         <p class="subtitle">Data, design och offentlig sektor &mdash; a notebook kept in public.</p>
       </div>
     </div>
-    <p class="plot-caption" id="plotCaption">flow field, two pens &middot; 35&nbsp;s &middot; this page drew itself</p>
+    <p class="plot-caption" id="plotCaption">
+      plot n&ordm;&nbsp;{allNotes.length} &mdash; one strand per note, placed by date<br />
+      length = words{svCount > 0 && ' · red ink = svenska'} &middot; changes only when a note is published
+    </p>
   </section>
 
   <main class="wrap">
@@ -70,32 +83,19 @@ const firstYear = notes.length ? Math.min(...notes.map((n) => n.data.pubDate.get
       <h2 class="about-label">About &mdash; Om</h2>
       <div class="about-text">
         <p>
-          Alberto Ferreira de Melo works at the intersection of data, design and public service,
-          with one fixation: making AI transparent, humane and genuinely useful. Sweden is home
-          now; Brazil will always be the other. The notes here arrive in English or Swedish &mdash;
-          whichever language the thought came in.
+          Alberto Ferreira de Melo works in public service, on data and design &mdash; mostly on
+          making AI transparent and genuinely useful. From Brazil, based in Sweden.
         </p>
         <p>
-          Away from the desk it is photography, 3D printing, small electronics, and more coffee
-          than is strictly advisable. The working rule for everything on this site:
-          <em>show process, not polish.</em>
+          Notes are in English or Swedish, whichever language the thought came in. Each one ends
+          with an <a href={withBase('/about/')}>innehållsdeklaration</a> &mdash; a declaration of
+          how it was made.
         </p>
       </div>
     </section>
-
-    {workbench.length > 0 && (
-      <section class="workbench" aria-label="Workbench">
-        Workbench &mdash; {workbench.map((w, i) => (
-          <>
-            {i > 0 && <span class="sep">&middot;</span>}
-            {w}
-          </>
-        ))}
-        <span class="dim">&nbsp;&mdash; (no dates, on purpose)</span>
-      </section>
-    )}
   </main>
 
+  <script is:inline id="plot-data" type="application/json" set:html={JSON.stringify({ notes: plotData, firstYear })} />
   <script is:inline>
     (function () {
       'use strict';
@@ -103,18 +103,25 @@ const firstYear = notes.length ? Math.min(...notes.map((n) => n.data.pubDate.get
       var mast = document.getElementById('masthead');
       var canvas = document.getElementById('plot');
       var caption = document.getElementById('plotCaption');
-      if (!hero || !mast || !canvas || !caption) return;
+      var dataEl = document.getElementById('plot-data');
+      if (!hero || !mast || !canvas || !caption || !dataEl) return;
       var ctx = canvas.getContext('2d');
+      var NOTES = [];
+      try { NOTES = JSON.parse(dataEl.textContent).notes || []; } catch (e) { return; }
 
-      var TOTAL = 2100; // frames ~= 35 s at 60 fps
-      var N = 140; // particles (scaled to canvas width in init)
-      var SUB = 2; // substeps per frame
-      var STEP = 1.6; // px per substep
       var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var DRAW_MS = 6000; // the plot lands in ~6 s — an entrance, not an endurance test
 
-      // One seed per visit: the plot is unique per visitor but reproducible
-      // within the visit (theme switch / resize redraws the same plot).
-      var seed0 = (Math.random() * 0xffffffff) >>> 0;
+      // Deterministic PRNG per note: the same notebook draws the same plot
+      // for every visitor. No Math.random anywhere.
+      function hash32(str) {
+        var h = 2166136261;
+        for (var i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619);
+        }
+        return h >>> 0;
+      }
       function mulberry32(s) {
         return function () {
           s |= 0; s = (s + 0x6d2b79f5) | 0;
@@ -124,217 +131,149 @@ const firstYear = notes.length ? Math.min(...notes.map((n) => n.data.pubDate.get
         };
       }
 
-      var rand, A, B, C, parts, W, H, zone, frame, raf = null, finished = false;
-      var RREP = 110;
-      var MS_PER_FRAME = 35000 / TOTAL;
-      var startTime = null;
-      var inkCol = '#16324F', penCol = '#C33D1F';
-      var mouse = { x: -1e4, y: -1e4, power: 0 };
+      var W, H, zone, raf = null;
+      var inkCol = '#16324F', penCol = '#C33D1F', hairCol = '#E3E1D9';
 
       function readColors() {
         var cs = getComputedStyle(document.documentElement);
         inkCol = cs.getPropertyValue('--line').trim() || inkCol;
         penCol = cs.getPropertyValue('--pen2').trim() || penCol;
+        hairCol = cs.getPropertyValue('--hair').trim() || hairCol;
       }
 
-      function spawn(p) {
-        var e = Math.floor(rand() * 4);
-        if (e === 0) { p.x = rand() * W; p.y = 0.5; }
-        else if (e === 1) { p.x = rand() * W; p.y = H - 0.5; }
-        else if (e === 2) { p.x = 0.5; p.y = rand() * H; }
-        else { p.x = W - 0.5; p.y = rand() * H; }
-        p.life = 180 + rand() * 220;
-        p.tang = rand() < 0.5 ? 1 : -1;
-        p.ring = 0;
+      function inZone(x, y, pad) {
+        return x > zone.x0 - pad && x < zone.x1 + pad && y > zone.y0 - pad && y < zone.y1 + pad;
       }
 
-      function fieldAngle(x, y, t) {
-        return Math.sin(x * A + t) + Math.cos(y * B) + Math.sin((x + y) * C);
-      }
+      // Build every stroke segment up front (deterministic), then reveal
+      // them over DRAW_MS. Each note = a cluster of strands rising from its
+      // date position on a ghost time axis; strand steps ∝ word count.
+      function buildSegments() {
+        var segs = [];
+        if (!NOTES.length) return segs;
 
-      function stepFrame() {
-        var t = frame * 0.006;
-        var penPath = new Path2D();
-        var anyPen = false, anyInk = false;
-        ctx.beginPath();
-        for (var i = 0; i < N; i++) {
-          var p = parts[i];
-          for (var s = 0; s < SUB; s++) {
-            var a = fieldAngle(p.x, p.y, t);
-            var vx = Math.cos(a), vy = Math.sin(a);
+        var minT = Infinity, maxT = -Infinity;
+        NOTES.forEach(function (n) { if (n.t < minT) minT = n.t; if (n.t > maxT) maxT = n.t; });
+        // Pad the axis to whole years so positions stay honest as notes arrive.
+        var y0 = new Date(minT).getUTCFullYear();
+        var y1 = new Date(maxT).getUTCFullYear() + 1;
+        var t0 = Date.UTC(y0, 0, 1), t1 = Date.UTC(y1, 0, 1);
+        var span = Math.max(1, t1 - t0);
+        var xL = W * 0.07, xR = W * 0.93;
+        var baseY = H * 0.8;
 
-            // Exclusion zone: steer away from the masthead with a smooth
-            // falloff plus per-particle tangential drift and jitter, so
-            // lines curl around the type without etching its outline.
-            var R = RREP;
-            var nearZone = false;
-            if (p.x > zone.x0 - R && p.x < zone.x1 + R && p.y > zone.y0 - R && p.y < zone.y1 + R) {
-              var qx = Math.max(zone.x0, Math.min(zone.x1, p.x));
-              var qy = Math.max(zone.y0, Math.min(zone.y1, p.y));
-              var inside = qx === p.x && qy === p.y;
-              if (inside) {
-                nearZone = true;
-                var zcx = (zone.x0 + zone.x1) / 2, zcy = (zone.y0 + zone.y1) / 2;
-                var dx = (p.x - zcx) / ((zone.x1 - zone.x0) / 2 || 1);
-                var dy = (p.y - zcy) / ((zone.y1 - zone.y0) / 2 || 1);
-                var dd = Math.hypot(dx, dy) || 1;
-                vx += (dx / dd) * 3.4; vy += (dy / dd) * 3.4;
-              } else {
-                var ex = p.x - qx, ey = p.y - qy;
-                var ed = Math.hypot(ex, ey) || 1;
-                if (ed < R) {
-                  nearZone = true;
-                  var fall = 1 - ed / R;
-                  var k = 2.3 * fall * fall;
-                  vx += (ex / ed) * k + (-ey / ed) * k * 0.6 * p.tang;
-                  vy += (ey / ed) * k + (ex / ed) * k * 0.6 * p.tang;
-                  var ja = (rand() - 0.5) * 0.25;
-                  var cj = Math.cos(ja), sj = Math.sin(ja);
-                  var jvx = vx * cj - vy * sj;
-                  vy = vx * sj + vy * cj; vx = jvx;
-                }
-              }
-            }
-            if (nearZone) {
-              if (++p.ring > 70) { spawn(p); continue; }
-            } else {
-              p.ring = 0;
-            }
-
-            // Pointer vortex: disturbing water, not a game.
-            if (mouse.power > 0.02) {
-              var mdx = p.x - mouse.x, mdy = p.y - mouse.y;
-              var md = Math.hypot(mdx, mdy);
-              if (md < 150 && md > 1) {
-                var st = (1 - md / 150) * mouse.power * 1.35;
-                vx += (-mdy / md) * st; vy += (mdx / md) * st;
-              }
-            }
-
-            var vl = Math.hypot(vx, vy) || 1;
-            var nx = p.x + (vx / vl) * STEP;
-            var ny = p.y + (vy / vl) * STEP;
-
-            // Never lay ink in the core of the zone.
-            var core = nx > zone.x0 + 12 && nx < zone.x1 - 12 && ny > zone.y0 + 12 && ny < zone.y1 - 12;
-            if (core) { spawn(p); continue; }
-
-            if (p.pen) { penPath.moveTo(p.x, p.y); penPath.lineTo(nx, ny); anyPen = true; }
-            else { ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); anyInk = true; }
-
-            p.x = nx; p.y = ny; p.life--;
-            if (p.life <= 0 || p.x <= 0 || p.x >= W || p.y <= 0 || p.y >= H) spawn(p);
+        // Ghost axis: hairline + a tick per year boundary.
+        for (var yy = y0; yy <= y1; yy++) {
+          var tx = xL + ((Date.UTC(yy, 0, 1) - t0) / span) * (xR - xL);
+          segs.push({ x0: tx, y0: baseY - 5, x1: tx, y1: baseY + 5, ink: 'hair' });
+        }
+        var AXIS_STEP = 14;
+        for (var ax = xL; ax < xR; ax += AXIS_STEP) {
+          var ax1 = Math.min(ax + AXIS_STEP - 3, xR);
+          if (!inZone(ax, baseY, 24) && !inZone(ax1, baseY, 24)) {
+            segs.push({ x0: ax, y0: baseY, x1: ax1, y1: baseY, ink: 'hair' });
           }
         }
-        ctx.globalAlpha = 0.24;
+
+        NOTES.forEach(function (n) {
+          var rand = mulberry32(hash32(n.seed + ':' + n.t));
+          var xd = xL + ((n.t - t0) / span) * (xR - xL);
+          var strands = 4 + Math.floor(rand() * 3);
+          var totalSteps = Math.max(140, Math.min(2600, n.words * 2.2));
+          var stepsPer = Math.round(totalSteps / strands);
+          var A = 0.004 + rand() * 0.008;
+          var B = 0.004 + rand() * 0.008;
+          var phase = rand() * 6.283;
+
+          for (var s = 0; s < strands; s++) {
+            var x = xd + (rand() - 0.5) * 26;
+            var y = baseY - rand() * 8;
+            var drift = 0.55 + rand() * 0.5; // upward pull
+            var sway = (rand() - 0.5) * 1.1;
+            for (var st = 0; st < stepsPer; st++) {
+              var a = Math.sin(y * A + phase) + Math.cos(x * B) + sway;
+              var vx = Math.cos(a) * 0.9;
+              var vy = -drift + Math.sin(a * 1.7) * 0.55;
+              var vl = Math.hypot(vx, vy) || 1;
+              var nx = x + (vx / vl) * 1.7;
+              var ny = y + (vy / vl) * 1.7;
+              if (ny < H * 0.06 || nx < 4 || nx > W - 4 || ny > baseY + 6) break;
+              if (inZone(nx, ny, 14)) break; // strands stop at the masthead's paper
+              segs.push({ x0: x, y0: y, x1: nx, y1: ny, ink: n.sv ? 'pen' : 'ink' });
+              x = nx; y = ny;
+            }
+          }
+        });
+        return segs;
+      }
+
+      var segments = [];
+
+      function paint(upTo) {
+        ctx.clearRect(0, 0, W, H);
         ctx.lineWidth = 1;
-        if (anyInk) { ctx.strokeStyle = inkCol; ctx.stroke(); }
-        if (anyPen) { ctx.strokeStyle = penCol; ctx.stroke(penPath); }
-        mouse.power *= 0.96;
-        frame++;
+        ctx.lineCap = 'round';
+        var groups = { hair: [], ink: [], pen: [] };
+        for (var i = 0; i < upTo; i++) groups[segments[i].ink].push(segments[i]);
+        [['hair', hairCol, 0.9], ['ink', inkCol, 0.42], ['pen', penCol, 0.5]].forEach(function (g) {
+          var list = groups[g[0]];
+          if (!list.length) return;
+          ctx.beginPath();
+          list.forEach(function (sg) { ctx.moveTo(sg.x0, sg.y0); ctx.lineTo(sg.x1, sg.y1); });
+          ctx.globalAlpha = g[2];
+          ctx.strokeStyle = g[1];
+          ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
       }
 
-      function finish() {
-        finished = true;
-        if (raf) { cancelAnimationFrame(raf); raf = null; }
-        caption.classList.add('show');
-      }
-
-      // Time-based loop: ~35 s of wall-clock regardless of refresh rate.
+      var startTs = null;
       function loop(ts) {
-        if (startTime === null) startTime = ts - frame * MS_PER_FRAME;
-        var elapsed = ts - startTime;
-        var target = Math.min(TOTAL, Math.floor(elapsed / MS_PER_FRAME));
-        var steps = Math.min(4, target - frame);
-        for (var s = 0; s < steps; s++) stepFrame();
-        if (frame >= TOTAL || elapsed >= 35000) { finish(); return; }
-        raf = requestAnimationFrame(loop);
+        if (startTs === null) startTs = ts;
+        var k = Math.min(1, (ts - startTs) / DRAW_MS);
+        // Ease-out: the pen sprints early, settles at the end.
+        var eased = 1 - Math.pow(1 - k, 2.2);
+        paint(Math.round(segments.length * eased));
+        if (k < 1) { raf = requestAnimationFrame(loop); }
+        else { raf = null; caption.classList.add('show'); }
       }
 
-      // (Re)initialise; fastForward = frames to run synchronously.
-      function init(fastForward) {
+      function init(animate) {
         if (raf) { cancelAnimationFrame(raf); raf = null; }
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
         W = hero.clientWidth; H = hero.clientHeight;
         canvas.width = Math.max(1, Math.round(W * dpr));
         canvas.height = Math.max(1, Math.round(H * dpr));
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, W, H);
-        ctx.lineCap = 'round';
         readColors();
 
         var hr = hero.getBoundingClientRect();
         var mr = mast.getBoundingClientRect();
-        var m = W < 680 ? 14 : 30;
-        RREP = W < 680 ? 55 : 110;
+        var m = W < 680 ? 12 : 26;
         zone = {
           x0: mr.left - hr.left - m, y0: mr.top - hr.top - m,
           x1: mr.right - hr.left + m, y1: mr.bottom - hr.top + m,
         };
 
-        rand = mulberry32(seed0);
-        A = 0.002 + rand() * 0.009;
-        B = 0.002 + rand() * 0.009;
-        C = 0.0015 + rand() * 0.005;
-        // Narrow canvases get proportionally fewer pens so 35 s of ink
-        // stays at "pen density" instead of compounding into a blot.
-        N = Math.min(140, Math.max(48, Math.round((140 * W) / 1200)));
-        parts = [];
-        for (var i = 0; i < N; i++) {
-          var p = { x: 0, y: 0, life: 0, pen: rand() < 0.09 };
-          spawn(p);
-          parts.push(p);
-        }
-        frame = 0; finished = false; startTime = null;
+        segments = buildSegments();
+        startTs = null;
         caption.classList.remove('show');
-
-        var ff = Math.min(fastForward || 0, TOTAL);
-        var savedPower = mouse.power; mouse.power = 0;
-
-        function afterFF() {
-          mouse.power = savedPower;
-          if (frame >= TOTAL) { finish(); }
-          else if (!reduced) { raf = requestAnimationFrame(loop); }
-          else { finish(); }
-        }
-
-        if (reduced || ff <= 300) {
-          for (var f = 0; f < ff; f++) stepFrame();
-          afterFF();
+        if (animate && !reduced && segments.length) {
+          raf = requestAnimationFrame(loop);
         } else {
-          // Big replays (theme toggle / resize) are chunked across rAF so
-          // the main thread never freezes — it reads as the plotter racing
-          // back through the drawing.
-          var replayChunk = function () {
-            mouse.power = 0;
-            var stop = Math.min(frame + 300, ff);
-            while (frame < stop) stepFrame();
-            if (frame < ff) { raf = requestAnimationFrame(replayChunk); }
-            else { raf = null; afterFF(); }
-          };
-          raf = requestAnimationFrame(replayChunk);
+          paint(segments.length);
+          caption.classList.add('show');
         }
       }
 
-      hero.addEventListener('pointermove', function (e) {
-        if (finished || reduced) return;
-        var r = canvas.getBoundingClientRect();
-        mouse.x = e.clientX - r.left;
-        mouse.y = e.clientY - r.top;
-        mouse.power = 1;
-      }, { passive: true });
-
-      // Theme change: redraw the same plot, fast-forwarded, in the new inks.
-      function redraw() {
-        var at = finished ? TOTAL : frame;
-        init(at);
-      }
+      // Theme change: same plot, new inks — instant redraw, no re-animation.
       var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      if (mq.addEventListener) mq.addEventListener('change', redraw);
-      else if (mq.addListener) mq.addListener(redraw);
+      var onTheme = function () { init(false); };
+      if (mq.addEventListener) mq.addEventListener('change', onTheme);
+      else if (mq.addListener) mq.addListener(onTheme);
       new MutationObserver(function (muts) {
         for (var i = 0; i < muts.length; i++) {
-          if (muts[i].attributeName === 'data-theme') { redraw(); return; }
+          if (muts[i].attributeName === 'data-theme') { onTheme(); return; }
         }
       }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
@@ -344,13 +283,12 @@ const firstYear = notes.length ? Math.min(...notes.map((n) => n.data.pubDate.get
         rt = setTimeout(function () {
           if (hero.clientWidth === lastW && hero.clientHeight === lastH) return;
           lastW = hero.clientWidth; lastH = hero.clientHeight;
-          redraw();
+          init(false);
         }, 250);
       });
       lastW = hero.clientWidth; lastH = hero.clientHeight;
 
-      // Go. Reduced motion: draw the entire finished plot before first paint.
-      init(reduced ? TOTAL : 0);
+      init(true);
     })();
   </script>
 </PersonalLayout>

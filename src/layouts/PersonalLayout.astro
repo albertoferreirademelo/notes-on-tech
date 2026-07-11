@@ -14,7 +14,7 @@ const withBase = (path: string) => (path.startsWith('/') ? `${normalizeBase}${pa
 
 const navLinks = [
   { href: '/', label: 'index', key: 'index' },
-  { href: '/notes/', label: 'notes', key: 'notes' },
+  { href: '/notes/', label: 'arkiv', key: 'notes' },
   { href: '/about/', label: 'about', key: 'about' },
 ];
 
@@ -57,7 +57,7 @@ const year = new Date().getFullYear();
 
     <footer class="foot">
       <div class="wrap foot-in">
-        <span>© {year} Alberto Ferreira de Melo — show process, not polish</span>
+        <span>© {year} Alberto Ferreira de Melo</span>
         <span class="foot-links">
           <a href="https://github.com/albertoferreirademelo">GitHub</a>
           <a href={withBase('/notes/')}>Arkiv</a>

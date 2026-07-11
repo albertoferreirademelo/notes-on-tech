@@ -4,9 +4,9 @@ import PersonalLayout from '../../layouts/PersonalLayout.astro';
 
 // Drop a new markdown file in src/content/notes and it appears here,
 // on the timeline and in its year section, automatically.
-const notes = (await getCollection('notes')).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
+const notes = (await getCollection('notes'))
+  .filter((n) => import.meta.env.DEV || !n.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 
 const base = import.meta.env.BASE_URL || '/';
 const normalizeBase = base === '/' ? '' : base.replace(/\/$/, '');
@@ -51,7 +51,7 @@ for (let y = minYear; y <= maxYear + 1; y++) {
 >
   <main class="wrap">
     <header class="arkiv-head">
-      <p class="section-label">Arkiv &mdash; the full notebook</p>
+      <p class="section-label">Arkiv</p>
       <h1>Anteckningar</h1>
       <p class="arkiv-count">
         {notes.length} {notes.length === 1 ? 'note' : 'notes'} &middot; {languages.join(' / ')} &middot; {minYear}{maxYear > minYear ? `–${maxYear}` : ''}
@@ -71,7 +71,7 @@ for (let y = minYear; y <= maxYear + 1; y++) {
           <span style={`left:${y.left}%`}>{y.year}</span>
         ))}
       </div>
-      <p class="timeline-caption">one tick per note &mdash; hover to read, click to open</p>
+      <p class="timeline-caption">one tick per note &mdash; hover for the title, click to open</p>
     </nav>
 
     {years.length > 1 && (
@@ -105,7 +105,7 @@ for (let y = minYear; y <= maxYear + 1; y++) {
       </section>
     ))}
 
-    {notes.length === 0 && <p class="arkiv-count">The notebook is empty — the first note is on its way.</p>}
+    {notes.length === 0 && <p class="arkiv-count">Nothing here yet.</p>}
   </main>
 </PersonalLayout>
 

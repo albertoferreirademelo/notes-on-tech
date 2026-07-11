@@ -5,6 +5,7 @@ pubDate: 2025-10-30
 slug: "hello-world"
 lang: "en"
 image: "/blog/251030_hello_world/fmd_coffee.png"
+ai: "none"
 ---
 
 ### Welcome and thanks for stopping by!

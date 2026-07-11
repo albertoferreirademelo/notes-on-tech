@@ -1,24 +1,30 @@
 ---
+import { getCollection } from 'astro:content';
 import PersonalLayout from '../layouts/PersonalLayout.astro';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime(),
+);
+const workbench = projects.map((p) => p.data.title.replace(/\s*\(.*\)\s*/, '').toLowerCase());
 ---
 <PersonalLayout
   current="about"
   title="About — Alberto Ferreira de Melo"
-  description="Who I am, what I'm exploring, and why this notebook exists."
+  description="Who writes this notebook, and how it is made."
 >
   <main class="wrap">
     <header class="arkiv-head">
-      <p class="section-label">About &mdash; Om mig</p>
+      <p class="section-label">About &mdash; Om</p>
       <h1>Alberto<br />Ferreira de&nbsp;Melo</h1>
     </header>
 
-    <section class="about" aria-label="Biography">
+    <section class="about" aria-label="Work">
       <h2 class="about-label">Work</h2>
       <div class="about-text">
         <p>
-          I work at the intersection of data, design and public service. My focus is on making AI
-          transparent, humane and genuinely useful. Sweden is home now, and Brazil will always be
-          the other.
+          I work in public service, on data and design. Most of my time goes to one problem:
+          making AI systems that people can understand, question and actually use. From Brazil,
+          based in Sweden.
         </p>
       </div>
     </section>
@@ -27,22 +33,41 @@ import PersonalLayout from '../layouts/PersonalLayout.astro';
       <h2 class="about-label">This site</h2>
       <div class="about-text">
         <p>
-          This site is my working notebook. I write in English and Swedish, document side projects
-          and share ideas before they are fully formed. The goal is to <em>show process, not
-          polish</em> — which is also why the drawing on the front page is different on every
-          visit: the page plots itself while you read, and no two visitors see the same artwork.
+          A working notebook, written in English and Swedish. The rule is <em>show process, not
+          polish</em> — notes are published while they are still moving, and the site is built to
+          prove it rather than say it.
+        </p>
+        <p>
+          Every note ends with an <em>innehållsdeklaration</em>: a contents declaration stating
+          how it was made — word count, revisions, and whether AI touched it. The drawing on the
+          front page is the notebook's own record: one strand per note, placed by date, sized by
+          length, and redrawn only when something new is published.
         </p>
       </div>
     </section>
 
+    {workbench.length > 0 && (
+      <section class="about" style="padding-top:0" aria-label="In progress">
+        <h2 class="about-label">Pågående &mdash; in progress</h2>
+        <div class="about-text">
+          <p class="workbench-line">{workbench.join(' · ')}</p>
+        </div>
+      </section>
+    )}
+
     <section class="about" style="padding-top:0" aria-label="Off the clock">
       <h2 class="about-label">Off the clock</h2>
       <div class="about-text">
-        <p>
-          Photography, 3D printing and small electronics — and more coffee than is strictly
-          advisable. Curiosity connects it all.
-        </p>
+        <p>Photography, 3D printing, small electronics.</p>
       </div>
     </section>
   </main>
 </PersonalLayout>
+
+<style>
+  .workbench-line {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+  }
+</style>

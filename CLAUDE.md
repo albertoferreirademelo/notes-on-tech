@@ -8,15 +8,19 @@ markdown content collections, GitHub Pages.
 - `npm run dev` — dev server on :4321
 - `npm run build` — static build to `dist/`
 - `npm run preview` — serve the built site
-- `npm run deploy` — build + push `dist/` to the `gh-pages` branch (**this updates the LIVE site**)
+- `npm run skriv` — the writing desk (local note editor + one-click publish, see `tools/skriv/README.md`)
 
 ## Deployment (important)
 
 - GitHub Pages serves the **`gh-pages` branch** with custom domain `www.ferreirademelo.com`.
+- The ONLY publish path is the GitHub Actions workflow (`.github/workflows/deploy.yml`):
+  push to `main` → build → deploy to `gh-pages`. There is deliberately no local deploy
+  script — a local deploy would ship uncommitted drafts from the working tree.
 - `public/CNAME` and `public/.nojekyll` are **required** — never delete them.
   Without `.nojekyll`, Jekyll strips `_astro/` and the live site loses all CSS/fonts.
-- **Never push to `main` or run `npm run deploy` without the owner's explicit OK** —
-  both paths lead to the live site. Do feature work on `claude/*` branches.
+- **Never push to `main` without the owner's explicit OK** — it updates the live site.
+  Do feature work on `claude/*` branches.
+- Notes with `draft: true` render in `astro dev` but are excluded from builds.
 
 ## Architecture
 

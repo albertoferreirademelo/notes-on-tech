@@ -401,6 +401,32 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--pen2); outline-
   border: 1px solid var(--hair); padding: 4px; background: var(--paper);
 }
 
+/* innehållsdeklaration — the contents declaration at the foot of a note */
+.declaration {
+  border: 1px solid var(--hair);
+  padding: 1.1rem 1.3rem 1rem;
+  margin-top: 3rem;
+}
+.declaration-title {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--pen2);
+  margin-bottom: .55rem;
+}
+.declaration-body {
+  font-family: var(--mono); font-size: .74rem; letter-spacing: .05em;
+  color: var(--type); line-height: 1.7;
+}
+.signature {
+  display: block; width: 100%; height: 56px;
+  margin-top: .9rem;
+  border-top: 1px solid var(--hair);
+  padding-top: .4rem;
+}
+.declaration-note {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .08em;
+  color: var(--graphite); margin-top: .35rem;
+}
+
 /* prev / next pagination */
 .pager {
   display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem;
