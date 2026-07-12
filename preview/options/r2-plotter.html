@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferreira de Melo — Anteckningar</title>
+</head>
+<body>
+<style>
+  :root{
+    --paper:#FBFAF6;
+    --line:#16324F;
+    --pen2:#C33D1F;
+    --graphite:#7A776D;
+    --hair:#E3E1D9;
+    --type:#16324F;
+    --serif:'Didot','Bodoni MT','Playfair Display',Georgia,serif;
+    --body:Charter,Cambria,Georgia,serif;
+    --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --paper:#10151C;
+      --line:#C7D6EA;
+      --pen2:#E0563A;
+      --graphite:#8A93A3;
+      --hair:#26303E;
+      --type:#EDF1F7;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#10151C;
+    --line:#C7D6EA;
+    --pen2:#E0563A;
+    --graphite:#8A93A3;
+    --hair:#26303E;
+    --type:#EDF1F7;
+  }
+  :root[data-theme="light"]{
+    --paper:#FBFAF6;
+    --line:#16324F;
+    --pen2:#C33D1F;
+    --graphite:#7A776D;
+    --hair:#E3E1D9;
+    --type:#16324F;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--type)}
+  body{
+    font-family:var(--body);
+    font-size:1rem;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--pen2);color:var(--paper)}
+
+  a{color:inherit}
+  a:focus-visible{outline:2px solid var(--pen2);outline-offset:3px}
+
+  .wrap{max-width:72rem;margin-inline:auto;padding-inline:clamp(1.25rem,5vw,3rem)}
+
+  /* ---------- top bar ---------- */
+  .topbar{border-bottom:1px solid var(--hair)}
+  .topbar-in{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-block:1.1rem;gap:1rem;flex-wrap:wrap;
+  }
+  .wordmark{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;
+    text-decoration:none;color:var(--type);
+  }
+  .nav{display:flex;gap:1.75rem}
+  .nav a{
+    font-family:var(--mono);font-size:.68rem;text-transform:uppercase;
+    letter-spacing:.2em;text-decoration:none;color:var(--graphite);
+    position:relative;padding-bottom:3px;
+  }
+  .nav a::after,.wordmark::after,.foot-links a::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+    background:var(--pen2);transform:scaleX(0);transform-origin:left;
+    transition:transform .3s ease;
+  }
+  .wordmark{position:relative;padding-bottom:3px}
+  .nav a:hover,.nav a:focus-visible{color:var(--type)}
+  .nav a:hover::after,.nav a:focus-visible::after,
+  .wordmark:hover::after,.wordmark:focus-visible::after{transform:scaleX(1)}
+
+  /* ---------- hero / plot ---------- */
+  .hero{
+    position:relative;
+    min-height:70vh;
+    display:flex;align-items:center;
+    overflow:hidden;
+    border-bottom:1px solid var(--hair);
+  }
+  .hero canvas{
+    position:absolute;inset:0;width:100%;height:100%;display:block;
+  }
+  .hero .wrap{position:relative;z-index:1;width:100%}
+  .masthead{
+    max-width:max-content;
+    padding-block:3rem;
+    text-shadow:
+      0 0 5px var(--paper),
+      0 0 10px var(--paper),
+      0 0 18px var(--paper),
+      0 0 32px var(--paper);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:.66rem;font-weight:400;
+    letter-spacing:.3em;text-transform:uppercase;
+    color:var(--graphite);
+    margin-bottom:1.3rem;
+  }
+  .masthead h1{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(3.2rem,9vw,7rem);
+    line-height:.95;letter-spacing:-.02em;
+    color:var(--type);
+  }
+  .subtitle{
+    font-family:var(--body);font-style:italic;
+    font-size:clamp(.98rem,1.6vw,1.15rem);
+    color:var(--graphite);
+    margin-top:1.4rem;
+  }
+  .plot-caption{
+    position:absolute;right:clamp(1rem,3vw,2rem);bottom:.9rem;z-index:1;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;
+    color:var(--graphite);
+    opacity:0;transition:opacity 1.4s ease;
+    text-align:right;
+    background:var(--paper);
+    border:1px solid var(--hair);
+    padding:.35rem .65rem;
+  }
+  .plot-caption.show{opacity:1}
+
+  /* ---------- notes index ---------- */
+  .notes{padding-block:4.5rem 0}
+  .section-label{
+    font-family:var(--mono);font-size:.66rem;font-weight:400;
+    letter-spacing:.28em;text-transform:uppercase;
+    color:var(--graphite);
+    margin-bottom:2.2rem;
+  }
+  .note{
+    display:grid;
+    grid-template-columns:9rem 1fr 3.5rem;
+    grid-template-areas:"date main lang";
+    gap:0 1.75rem;align-items:baseline;
+    padding:1.7rem 0;
+    border-top:1px solid var(--hair);
+    text-decoration:none;color:inherit;
+  }
+  .notes-list > :last-child{border-bottom:1px solid var(--hair)}
+  .n-date{
+    grid-area:date;
+    font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;
+    color:var(--graphite);font-variant-numeric:tabular-nums;
+  }
+  .n-main{grid-area:main;min-width:0}
+  .n-title{
+    display:inline-block;position:relative;
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(1.5rem,3.2vw,2.2rem);
+    line-height:1.12;letter-spacing:-.01em;
+    color:var(--type);
+    transition:transform .35s ease;
+  }
+  .n-title::after{
+    content:"";position:absolute;left:0;right:0;bottom:-5px;height:1px;
+    background:var(--pen2);
+    transform:scaleX(0);transform-origin:left;
+    transition:transform .35s ease;
+  }
+  .note:hover .n-title,.note:focus-visible .n-title{transform:translateX(10px)}
+  .note:hover .n-title::after,.note:focus-visible .n-title::after{transform:scaleX(1)}
+  .n-desc{
+    display:block;
+    font-family:var(--body);font-size:.95rem;line-height:1.55;
+    color:var(--graphite);
+    margin-top:.5rem;max-width:58ch;
+  }
+  .n-lang{
+    grid-area:lang;justify-self:end;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;
+    color:var(--pen2);
+  }
+  .year-marker{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    color:var(--graphite);
+    padding:.85rem 0;
+    border-top:1px solid var(--hair);
+  }
+
+  /* ---------- about ---------- */
+  .about{
+    display:grid;grid-template-columns:9rem 1fr;gap:1.75rem;
+    padding-block:4.5rem;
+  }
+  .about-label{
+    font-family:var(--mono);font-size:.66rem;font-weight:400;
+    letter-spacing:.28em;text-transform:uppercase;
+    color:var(--graphite);
+    padding-top:.35rem;
+  }
+  .about-text{max-width:58ch}
+  .about-text p{
+    font-family:var(--body);font-size:1.06rem;line-height:1.68;
+    color:var(--type);
+  }
+  .about-text p + p{margin-top:1.2rem}
+  .about-text em{font-style:italic}
+
+  /* ---------- workbench ---------- */
+  .workbench{
+    border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+    padding:1.35rem 0;
+    font-family:var(--mono);font-size:.73rem;letter-spacing:.1em;
+    color:var(--type);
+    text-transform:uppercase;
+  }
+  .workbench .dim{color:var(--graphite);text-transform:none;letter-spacing:.06em}
+  .workbench .sep{color:var(--pen2);padding-inline:.35em}
+
+  /* ---------- footer ---------- */
+  footer{padding:1.6rem 0 3.2rem}
+  .foot-in{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:1rem;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;
+    color:var(--graphite);
+  }
+  .foot-links{display:flex;gap:1.5rem}
+  .foot-links a{
+    text-decoration:none;color:var(--graphite);
+    position:relative;padding-bottom:3px;
+  }
+  .foot-links a:hover,.foot-links a:focus-visible{color:var(--type)}
+  .foot-links a:hover::after,.foot-links a:focus-visible::after{transform:scaleX(1)}
+
+  /* ---------- mobile ---------- */
+  @media (max-width:680px){
+    .note{
+      grid-template-columns:1fr auto;
+      grid-template-areas:"date lang" "main main";
+      gap:.55rem 1rem;
+    }
+    .about{grid-template-columns:1fr;gap:1.4rem;padding-block:3.5rem}
+    .eyebrow{letter-spacing:.22em}
+    .hero{min-height:76vh}
+  }
+
+  /* ---------- reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation:none !important;
+      transition:none !important;
+    }
+    .plot-caption{opacity:1}
+    .note:hover .n-title{transform:none}
+  }
+</style>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="wordmark" href="#">ferreirademelo.com</a>
+    <nav class="nav" aria-label="Main">
+      <a href="#">index</a>
+      <a href="#notes">notes</a>
+      <a href="#about">about</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="hero" aria-label="Generative plotter drawing">
+  <canvas id="plot" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="masthead" id="masthead">
+      <p class="eyebrow">Anteckningar&nbsp;&mdash;&nbsp;Field recordings&nbsp;&mdash;&nbsp;Since 2025</p>
+      <h1>Ferreira<br>de&nbsp;Melo</h1>
+      <p class="subtitle">Data, design och offentlig sektor &mdash; a notebook kept in public.</p>
+    </div>
+  </div>
+  <p class="plot-caption" id="plotCaption">plot n&ordm; 004 &mdash; flow field, two pens &middot; 35&nbsp;s &middot; this page drew itself</p>
+</section>
+
+<main class="wrap">
+  <section class="notes" id="notes">
+    <h2 class="section-label">Index &mdash; five notes, two languages</h2>
+    <div class="notes-list">
+      <a class="note" href="#">
+        <span class="n-date">2025-10-30</span>
+        <span class="n-main">
+          <span class="n-title">Hello world &mdash; why this notebook exists</span>
+          <span class="n-desc">Opening the notebook: rough edges over polished silence.</span>
+        </span>
+        <span class="n-lang">EN</span>
+      </a>
+      <a class="note" href="#">
+        <span class="n-date">2025-11-14</span>
+        <span class="n-main">
+          <span class="n-title">What &ldquo;transparent AI&rdquo; means in a public agency</span>
+          <span class="n-desc">Explainability is a design problem before it is a model problem.</span>
+        </span>
+        <span class="n-lang">EN</span>
+      </a>
+      <a class="note" href="#">
+        <span class="n-date">2025-12-02</span>
+        <span class="n-main">
+          <span class="n-title">Att bygga en familjebudget i Streamlit</span>
+          <span class="n-desc">CSV-exporter fr&aring;n svenska banker &mdash; alla konton i en vy.</span>
+        </span>
+        <span class="n-lang">SV</span>
+      </a>
+      <div class="year-marker" aria-hidden="true">&mdash;&nbsp;2026</div>
+      <a class="note" href="#">
+        <span class="n-date">2026-01-18</span>
+        <span class="n-main">
+          <span class="n-title">Att fotografera vinterljuset</span>
+          <span class="n-desc">Om det l&aring;ga ljuset i januari och varf&ouml;r kameran alltid f&ouml;ljer med.</span>
+        </span>
+        <span class="n-lang">SV</span>
+      </a>
+      <a class="note" href="#">
+        <span class="n-date">2026-02-07</span>
+        <span class="n-main">
+          <span class="n-title">Enclosures that actually snap shut</span>
+          <span class="n-desc">Notes from the 3D print lab: tolerances, test fits, and three failed lids.</span>
+        </span>
+        <span class="n-lang">EN</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <h2 class="about-label">About &mdash; Om</h2>
+    <div class="about-text">
+      <p>Alberto Ferreira de Melo works at the intersection of data, design and public service, with one fixation: making AI transparent, humane and genuinely useful. Sweden is home now; Brazil will always be the other. The notes here arrive in English or Swedish &mdash; whichever language the thought came in.</p>
+      <p>Away from the desk it is photography, 3D printing, small electronics, and more coffee than is strictly advisable. The working rule for everything on this site: <em>show process, not polish.</em></p>
+    </div>
+  </section>
+
+  <section class="workbench" aria-label="Workbench">
+    Workbench &mdash; budgetapp<span class="sep">&middot;</span>this website<span class="sep">&middot;</span>3d-print lab <span class="dim">&mdash; (no dates, on purpose)</span>
+  </section>
+
+  <footer>
+    <div class="foot-in">
+      <span>&copy; 2026 Alberto Ferreira de Melo</span>
+      <span class="foot-links">
+        <a href="#">GitHub</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">RSS</a>
+      </span>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var hero = document.getElementById("hero");
+  var mast = document.getElementById("masthead");
+  var canvas = document.getElementById("plot");
+  var caption = document.getElementById("plotCaption");
+  var ctx = canvas.getContext("2d");
+
+  var TOTAL = 2100;      // frames ~= 35 s at 60 fps
+  var N = 140;           // particles (scaled to canvas width in init)
+  var SUB = 2;           // substeps per frame
+  var STEP = 1.6;        // px per substep
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // One seed per visit: the plot is unique per visitor but reproducible
+  // within the visit (theme switch / resize redraws the same plot).
+  var seed0 = (Math.random() * 0xffffffff) >>> 0;
+  function mulberry32(s){
+    return function(){
+      s |= 0; s = (s + 0x6D2B79F5) | 0;
+      var t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  var rand, A, B, C, parts, W, H, zone, frame, raf = null, finished = false;
+  var RREP = 110;        // repulsion falloff radius (viewport-scaled in init)
+  var MS_PER_FRAME = 35000 / TOTAL;
+  var startTime = null;
+  var inkCol = "#16324F", penCol = "#C33D1F";
+  var mouse = { x: -1e4, y: -1e4, power: 0 };
+
+  function readColors(){
+    var cs = getComputedStyle(document.documentElement);
+    inkCol = cs.getPropertyValue("--line").trim() || inkCol;
+    penCol = cs.getPropertyValue("--pen2").trim() || penCol;
+  }
+
+  function spawn(p){
+    var e = Math.floor(rand() * 4);
+    if (e === 0){ p.x = rand() * W; p.y = 0.5; }
+    else if (e === 1){ p.x = rand() * W; p.y = H - 0.5; }
+    else if (e === 2){ p.x = 0.5; p.y = rand() * H; }
+    else { p.x = W - 0.5; p.y = rand() * H; }
+    p.life = 180 + rand() * 220;
+    p.tang = rand() < 0.5 ? 1 : -1; // per-particle orbit direction near the zone
+    p.ring = 0;                     // consecutive substeps spent in the falloff band
+  }
+
+  function fieldAngle(x, y, t){
+    return Math.sin(x * A + t) + Math.cos(y * B) + Math.sin((x + y) * C);
+  }
+
+  function stepFrame(){
+    var t = frame * 0.006;
+    var penPath = new Path2D();
+    var anyPen = false, anyInk = false;
+    ctx.beginPath();
+    for (var i = 0; i < N; i++){
+      var p = parts[i];
+      for (var s = 0; s < SUB; s++){
+        var a = fieldAngle(p.x, p.y, t);
+        var vx = Math.cos(a), vy = Math.sin(a);
+
+        // Exclusion zone: steer away from the masthead rectangle
+        // with a smooth falloff so lines curl around the type instead
+        // of etching the rectangle's outline. A per-particle tangential
+        // component plus angular jitter breaks the field/repulsion
+        // equilibrium so nothing slides along a straight balance line,
+        // and particles that linger in the band too long are retired.
+        var R = RREP;
+        var nearZone = false;
+        if (p.x > zone.x0 - R && p.x < zone.x1 + R &&
+            p.y > zone.y0 - R && p.y < zone.y1 + R){
+          var qx = Math.max(zone.x0, Math.min(zone.x1, p.x));
+          var qy = Math.max(zone.y0, Math.min(zone.y1, p.y));
+          var inside = (qx === p.x && qy === p.y);
+          if (inside){
+            nearZone = true;
+            var cx = (zone.x0 + zone.x1) / 2, cy = (zone.y0 + zone.y1) / 2;
+            var dx = (p.x - cx) / ((zone.x1 - zone.x0) / 2 || 1);
+            var dy = (p.y - cy) / ((zone.y1 - zone.y0) / 2 || 1);
+            var dd = Math.hypot(dx, dy) || 1;
+            vx += (dx / dd) * 3.4; vy += (dy / dd) * 3.4;
+          } else {
+            var ex = p.x - qx, ey = p.y - qy;
+            var ed = Math.hypot(ex, ey) || 1;
+            if (ed < R){
+              nearZone = true;
+              var fall = 1 - ed / R;
+              var k = 2.3 * fall * fall;
+              vx += (ex / ed) * k + (-ey / ed) * k * 0.6 * p.tang;
+              vy += (ey / ed) * k + (ex / ed) * k * 0.6 * p.tang;
+              var ja = (rand() - 0.5) * 0.25;
+              var cj = Math.cos(ja), sj = Math.sin(ja);
+              var jvx = vx * cj - vy * sj;
+              vy = vx * sj + vy * cj; vx = jvx;
+            }
+          }
+        }
+        if (nearZone){
+          if (++p.ring > 70){ spawn(p); continue; }
+        } else {
+          p.ring = 0;
+        }
+
+        // Pointer vortex: disturbing water, not a game.
+        if (mouse.power > 0.02){
+          var mdx = p.x - mouse.x, mdy = p.y - mouse.y;
+          var md = Math.hypot(mdx, mdy);
+          if (md < 150 && md > 1){
+            var st = (1 - md / 150) * mouse.power * 1.35;
+            vx += (-mdy / md) * st; vy += (mdx / md) * st;
+          }
+        }
+
+        var vl = Math.hypot(vx, vy) || 1;
+        var nx = p.x + (vx / vl) * STEP;
+        var ny = p.y + (vy / vl) * STEP;
+
+        // Belt-and-braces: never lay ink in the core of the zone,
+        // and retire any particle that fights its way deep inside.
+        var core = nx > zone.x0 + 12 && nx < zone.x1 - 12 &&
+                   ny > zone.y0 + 12 && ny < zone.y1 - 12;
+        if (core){
+          spawn(p);
+          continue;
+        }
+        {
+          if (p.pen){ penPath.moveTo(p.x, p.y); penPath.lineTo(nx, ny); anyPen = true; }
+          else { ctx.moveTo(p.x, p.y); ctx.lineTo(nx, ny); anyInk = true; }
+        }
+        p.x = nx; p.y = ny; p.life--;
+        if (p.life <= 0 || p.x <= 0 || p.x >= W || p.y <= 0 || p.y >= H) spawn(p);
+      }
+    }
+    ctx.globalAlpha = 0.24;
+    ctx.lineWidth = 1;
+    if (anyInk){ ctx.strokeStyle = inkCol; ctx.stroke(); }
+    if (anyPen){ ctx.strokeStyle = penCol; ctx.stroke(penPath); }
+    mouse.power *= 0.96;
+    frame++;
+  }
+
+  function finish(){
+    finished = true;
+    if (raf){ cancelAnimationFrame(raf); raf = null; }
+    caption.classList.add("show");
+  }
+
+  // Time-based loop: the plot takes ~35 s of wall-clock time regardless
+  // of display refresh rate (catch-up capped at 4 steps per rAF).
+  function loop(ts){
+    if (startTime === null) startTime = ts - frame * MS_PER_FRAME;
+    var elapsed = ts - startTime;
+    var target = Math.min(TOTAL, Math.floor(elapsed / MS_PER_FRAME));
+    var steps = Math.min(4, target - frame);
+    for (var s = 0; s < steps; s++) stepFrame();
+    if (frame >= TOTAL || elapsed >= 35000){ finish(); return; }
+    raf = requestAnimationFrame(loop);
+  }
+
+  // (Re)initialise the plot; fastForward = frames to run synchronously.
+  function init(fastForward){
+    if (raf){ cancelAnimationFrame(raf); raf = null; }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = hero.clientWidth; H = hero.clientHeight;
+    canvas.width = Math.max(1, Math.round(W * dpr));
+    canvas.height = Math.max(1, Math.round(H * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineCap = "round";
+    readColors();
+
+    var hr = hero.getBoundingClientRect();
+    var mr = mast.getBoundingClientRect();
+    // On small screens the zone + falloff would swallow the whole canvas;
+    // scale the breathing room down so the field keeps paper to draw on.
+    var m = W < 680 ? 14 : 30;
+    RREP = W < 680 ? 55 : 110;
+    zone = { x0: mr.left - hr.left - m, y0: mr.top - hr.top - m,
+             x1: mr.right - hr.left + m, y1: mr.bottom - hr.top + m };
+
+    rand = mulberry32(seed0);
+    A = 0.002 + rand() * 0.009;
+    B = 0.002 + rand() * 0.009;
+    C = 0.0015 + rand() * 0.005;
+    // Narrow canvases get proportionally fewer pens so 35 s of ink
+    // stays at "pen density" instead of compounding into a blot.
+    N = Math.min(140, Math.max(48, Math.round(140 * W / 1200)));
+    parts = [];
+    for (var i = 0; i < N; i++){
+      var p = { x: 0, y: 0, life: 0, pen: rand() < 0.09 };
+      spawn(p);
+      parts.push(p);
+    }
+    frame = 0; finished = false; startTime = null;
+    caption.classList.remove("show");
+
+    var ff = Math.min(fastForward || 0, TOTAL);
+    var savedPower = mouse.power; mouse.power = 0;
+
+    function afterFF(){
+      mouse.power = savedPower;
+      if (frame >= TOTAL){ finish(); }
+      else if (!reduced){ raf = requestAnimationFrame(loop); }
+      else { finish(); } /* reduced-motion safety: never animate */
+    }
+
+    if (reduced || ff <= 300){
+      // Small (or first-paint-critical) replays run synchronously.
+      for (var f = 0; f < ff; f++) stepFrame();
+      afterFF();
+    } else {
+      // Big replays (theme toggle / resize after a long plot) are chunked
+      // across rAF so the main thread never freezes — the intermediate
+      // paints read as the plotter racing through the drawing.
+      var replayChunk = function(){
+        mouse.power = 0;
+        var stop = Math.min(frame + 300, ff);
+        while (frame < stop) stepFrame();
+        if (frame < ff){ raf = requestAnimationFrame(replayChunk); }
+        else { raf = null; afterFF(); }
+      };
+      raf = requestAnimationFrame(replayChunk);
+    }
+  }
+
+  // Pointer vortex input.
+  hero.addEventListener("pointermove", function(e){
+    if (finished || reduced) return;
+    var r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+    mouse.power = 1;
+  }, { passive: true });
+
+  // Theme change: redraw the same plot, fast-forwarded, in the new inks.
+  function redraw(){
+    var at = finished ? TOTAL : frame;
+    init(at);
+  }
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", redraw);
+  else if (mq.addListener) mq.addListener(redraw);
+  new MutationObserver(function(muts){
+    for (var i = 0; i < muts.length; i++){
+      if (muts[i].attributeName === "data-theme"){ redraw(); return; }
+    }
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  // Debounced resize re-init.
+  var rt = null, lastW = 0, lastH = 0;
+  window.addEventListener("resize", function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){
+      if (hero.clientWidth === lastW && hero.clientHeight === lastH) return;
+      lastW = hero.clientWidth; lastH = hero.clientHeight;
+      redraw();
+    }, 250);
+  });
+  lastW = hero.clientWidth; lastH = hero.clientHeight;
+
+  // Go. Reduced motion: draw the entire finished plot before first paint.
+  init(reduced ? TOTAL : 0);
+})();
+</script>
+</body>
+</html>

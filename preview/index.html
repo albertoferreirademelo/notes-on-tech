@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ferreirademelo.com — design examples</title>
+<style>
+  :root{
+    --paper:#fbfaf6; --ink:#16324f; --pen2:#c33d1f; --graphite:#7a776d; --hair:#e3e1d9; --type:#16324f;
+    --serif:'Bodoni Moda','Didot','Bodoni MT',Georgia,serif;
+    --body:Charter,'Bitstream Charter',Cambria,Georgia,serif;
+    --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --paper:#10151c; --ink:#c7d6ea; --pen2:#e0563a; --graphite:#8a93a3; --hair:#26303e; --type:#edf1f7; }
+  }
+  :root[data-theme="dark"]{ --paper:#10151c; --ink:#c7d6ea; --pen2:#e0563a; --graphite:#8a93a3; --hair:#26303e; --type:#edf1f7; }
+  :root[data-theme="light"]{ --paper:#fbfaf6; --ink:#16324f; --pen2:#c33d1f; --graphite:#7a776d; --hair:#e3e1d9; --type:#16324f; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--type);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:66rem;margin-inline:auto;padding:0 clamp(1.25rem,5vw,3rem)}
+  header{border-bottom:1px solid var(--hair)}
+  .bar{display:flex;justify-content:space-between;align-items:baseline;padding:1.1rem 0;gap:1rem;flex-wrap:wrap}
+  .wm{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em}
+  .toggle{font-family:var(--mono);font-size:.85rem;background:none;border:none;color:var(--graphite);cursor:pointer}
+  .toggle:hover{color:var(--pen2)}
+  .lede{padding:3.2rem 0 1.6rem}
+  .eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.28em;text-transform:uppercase;color:var(--graphite);margin-bottom:1rem}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.02;letter-spacing:-.02em}
+  .lede p{max-width:60ch;color:var(--graphite);margin-top:1.1rem}
+  .sec-label{font-family:var(--mono);font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--graphite);margin:2.6rem 0 1.2rem;padding-top:1.4rem;border-top:1px solid var(--hair);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15rem,1fr));gap:1px;background:var(--hair);border:1px solid var(--hair)}
+  .card{background:var(--paper);padding:1.4rem 1.4rem 1.5rem;display:flex;flex-direction:column;gap:.5rem;text-decoration:none;min-height:9.5rem;transition:background .15s}
+  .card:hover{background:color-mix(in srgb,var(--pen2) 6%,var(--paper))}
+  .card .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--pen2)}
+  .card h3{font-family:var(--serif);font-weight:500;font-size:1.32rem;line-height:1.1;letter-spacing:-.01em}
+  .card p{font-size:.86rem;color:var(--graphite);line-height:1.45}
+  .card .go{margin-top:auto;font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;color:var(--graphite)}
+  .card:hover .go{color:var(--pen2)}
+  .card.reco{outline:1px solid var(--pen2);outline-offset:-1px}
+  .card .badge{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--pen2);border:1px solid var(--pen2);padding:.05rem .4rem;align-self:flex-start}
+  footer{border-top:1px solid var(--hair);margin-top:3.5rem;padding:1.6rem 0 3rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;color:var(--graphite)}
+  .note{font-family:var(--mono);font-size:.66rem;color:var(--graphite);margin-top:.8rem;letter-spacing:.04em}
+</style>
+</head>
+<body>
+  <header><div class="wrap bar">
+    <span class="wm">ferreirademelo.com — examples</span>
+    <button class="toggle" id="t" type="button" aria-label="toggle theme">◐</button>
+  </div></header>
+
+  <main class="wrap">
+    <section class="lede">
+      <p class="eyebrow">Designutkast — design examples</p>
+      <h1>Every homepage we tried.</h1>
+      <p>Twelve directions across four rounds, newest first. Each card opens the full working page — double-click friendly, no server needed. The recommended composite is marked.</p>
+      <p class="note">Tip: the animated ones (plotter, urverk, aurora, printer) look best given a few seconds to draw. Try the ◐ toggle for dark mode.</p>
+    </section>
+
+    <p class="sec-label"><span>Round 4 — the composite</span><span>the recommendation</span></p>
+    <div class="grid" id="r4">
+      <div class="card"><span class="k">R4 · composite</span><h3>Building…</h3><p>The composite (Urverk instrument + Plotter brand + page declaration) is being built and reviewed; its tile appears here when ready.</p><span class="go">soon →</span></div>
+    </div>
+
+    <p class="sec-label"><span>Round 3 — full reimaginings</span><span>2 entries</span></p>
+    <div class="grid">
+      <a class="card" href="options/r3-urverk.html"><span class="k">R3 · fable</span><h3>Urverk</h3><p>The notebook as a precision instrument: a live dial computing today's real daylight in Stockholm &amp; São Paulo, math inspectable on the page.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r3-sol.html"><span class="k">R3 · independent</span><h3>Spec-sheet</h3><p>The site as an honest Swedish datasheet, with a canvas 3D printer building a generative vase and a page-level contents declaration.</p><span class="go">open →</span></a>
+    </div>
+
+    <p class="sec-label"><span>Round 2 — the ambitious four</span><span>4 entries</span></p>
+    <div class="grid">
+      <a class="card" href="options/r2-plotter.html"><span class="k">R2 · became the site</span><h3>Plotter</h3><p>Generative pen-plot around a Bodoni masthead; museum-minimal typography. This direction became the current live design.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r2-blaeck.html"><span class="k">R2</span><h3>Bläck</h3><p>The field-notebook that inks itself in on load — routes, red-pen edits, the ARBETE PÅGÅR stamp.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r2-skrivbordet.html"><span class="k">R2</span><h3>Skrivbordet</h3><p>Your desk drawn from above; every object is navigation. Dark mode turns on the desk lamp.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r2-doismundos.html"><span class="k">R2</span><h3>Dois Mundos</h3><p>São Paulo dusk meets Stockholm winter in a living seam; scrolling flies between the two cities.</p><span class="go">open →</span></a>
+    </div>
+
+    <p class="sec-label"><span>Round 1 — first sketches</span><span>4 entries</span></p>
+    <div class="grid">
+      <a class="card" href="options/r1-fieldnotes.html"><span class="k">R1 · first favourite</span><h3>Fältanteckningar</h3><p>The site as a working paper notebook — dotted grid, marginalia, taped cards. The seed of everything after.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r1-professional.html"><span class="k">R1</span><h3>Clean &amp; professional</h3><p>Swedish-modern calm: off-white, pine-teal accent, serif headings, a quiet sidebar.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r1-fun.html"><span class="k">R1</span><h3>Fun, grown-up</h3><p>Café palette, tilted sticker cards, a rotating coffee badge, a squiggle underline.</p><span class="go">open →</span></a>
+      <a class="card" href="options/r1-3d-aurora.html"><span class="k">R1</span><h3>3D — Norrsken</h3><p>A dark arctic sky with animated aurora and a mouse-parallax 3D hero.</p><span class="go">open →</span></a>
+    </div>
+  </main>
+
+  <footer><div class="wrap">
+    12 examples · rounds 1–4 · built for ferreirademelo.com · view offline, nothing fetched
+  </div></footer>
+
+  <script>
+    (function(){
+      var b=document.getElementById('t');
+      try{var s=localStorage.getItem('preview-theme');if(s)document.documentElement.dataset.theme=s;}catch(e){}
+      b.addEventListener('click',function(){
+        var cur=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+        var n=cur==='dark'?'light':'dark';
+        document.documentElement.dataset.theme=n;
+        try{localStorage.setItem('preview-theme',n);}catch(e){}
+      });
+    })();
+  </script>
+</body>
+</html>

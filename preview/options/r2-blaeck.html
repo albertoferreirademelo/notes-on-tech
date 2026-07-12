@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fältanteckningar — Alberto Ferreira de Melo</title>
+</head>
+<body>
+<style>
+/* ============ BLÄCK — the notebook that writes itself ============ */
+:root{
+  --paper:#F4F0E3;
+  --dots:#D6D0BE;
+  --ink:#1E3357;
+  --red:#B23B2A;
+  --hi:#F6E96B;
+  --graphite:#6B675B;
+  --desk:#DDD5BF;
+  --blot:rgba(30,51,87,.07);
+  --line:rgba(30,51,87,.22);
+  --hairline:rgba(30,51,87,.14);
+  --stack-edge:rgba(63,58,42,.35);
+  --shadow-soft:rgba(52,46,30,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#201E19;
+    --dots:#383528;
+    --ink:#A9C4EA;
+    --red:#E2705B;
+    --hi:#575024;
+    --graphite:#97917E;
+    --desk:#15130E;
+    --blot:rgba(169,196,234,.09);
+    --line:rgba(169,196,234,.28);
+    --hairline:rgba(169,196,234,.16);
+    --stack-edge:rgba(0,0,0,.6);
+    --shadow-soft:rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#201E19;
+  --dots:#383528;
+  --ink:#A9C4EA;
+  --red:#E2705B;
+  --hi:#575024;
+  --graphite:#97917E;
+  --desk:#15130E;
+  --blot:rgba(169,196,234,.09);
+  --line:rgba(169,196,234,.28);
+  --hairline:rgba(169,196,234,.16);
+  --stack-edge:rgba(0,0,0,.6);
+  --shadow-soft:rgba(0,0,0,.5);
+}
+:root[data-theme="light"]{
+  --paper:#F4F0E3;
+  --dots:#D6D0BE;
+  --ink:#1E3357;
+  --red:#B23B2A;
+  --hi:#F6E96B;
+  --graphite:#6B675B;
+  --desk:#DDD5BF;
+  --blot:rgba(30,51,87,.07);
+  --line:rgba(30,51,87,.22);
+  --hairline:rgba(30,51,87,.14);
+  --stack-edge:rgba(63,58,42,.35);
+  --shadow-soft:rgba(52,46,30,.22);
+}
+
+:root{
+  --serif:Charter,'Bitstream Charter','Sitka Text',Cambria,Georgia,serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  --hand:'Segoe Print','Bradley Hand','Comic Sans MS',cursive;
+}
+
+html{scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--desk);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:1.0625rem;
+  line-height:1.62;
+  padding:2.75rem .9rem 5.5rem;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--red)}
+a:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:2px}
+::selection{background:var(--hi);color:var(--ink)}
+
+/* ---------- the page on the desk ---------- */
+.page{
+  position:relative;
+  max-width:46rem;
+  margin:0 auto;
+  padding:2.6rem clamp(1.15rem,5vw,3.25rem) 3.25rem;
+  background-color:var(--paper);
+  background-image:radial-gradient(var(--dots) 1px,transparent 1.15px);
+  background-size:21px 21px;
+  background-position:10px 14px;
+  box-shadow:
+    0 1px 0 var(--hairline),
+    5px 6px 0 -1.5px var(--paper),
+    5px 6px 0 -0.5px var(--stack-edge),
+    10px 12px 0 -3px var(--paper),
+    10px 12px 0 -2px var(--stack-edge),
+    16px 26px 44px var(--shadow-soft);
+}
+
+/* ---------- ribbon bookmark ---------- */
+.ribbon{
+  position:fixed;
+  top:0;
+  left:min(calc(50% + 23rem - 4.6rem),calc(100% - 3.4rem));
+  width:32px;
+  height:88px;
+  z-index:9;
+  background:var(--red);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% calc(100% - 12px),0 100%);
+  transition:height .25s ease;
+  animation:ribbonDrop .5s ease .1s both;
+  outline-offset:4px;
+}
+.ribbon::after{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:100%;
+  background:linear-gradient(to right,rgba(0,0,0,.18),rgba(0,0,0,0) 45%,rgba(255,255,255,.14) 82%,rgba(0,0,0,.2));
+  clip-path:inherit;
+}
+.ribbon:hover,.ribbon:focus-visible{height:94px}
+@keyframes ribbonDrop{from{transform:translateY(-14px)}}
+
+/* ---------- masthead ---------- */
+.mast{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:.35rem 1.5rem;
+  font-family:var(--mono);
+  animation:fadeIn .6s ease 0s both;
+}
+.mast-title{
+  font-size:.72rem;
+  letter-spacing:.19em;
+  font-weight:600;
+}
+.mast nav{display:flex;gap:1.1rem;font-size:.68rem;letter-spacing:.12em}
+.mast nav a{text-decoration:none;color:var(--graphite)}
+.mast nav a:hover{color:var(--red)}
+.rule2{
+  margin-top:.55rem;
+  height:6px;
+  border-top:2.5px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+  transform-origin:left;
+  animation:drawRule .55s cubic-bezier(.25,.7,.3,1) 0s both;
+}
+@keyframes drawRule{from{transform:scaleX(0)}}
+.entryline{
+  margin-top:.8rem;
+  padding:.42rem 0;
+  border-top:1px solid var(--hairline);
+  border-bottom:1px solid var(--hairline);
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.16em;
+  color:var(--graphite);
+  text-align:center;
+  animation:fadeIn .6s ease .15s both;
+}
+
+/* ---------- the route ---------- */
+.route{
+  display:block;
+  width:100%;
+  height:auto;
+  margin:.9rem 0 0;
+  overflow:visible;
+}
+.route .route-ink{stroke:var(--ink)}
+.route .route-mask-path{
+  stroke-dasharray:100;
+  stroke-dashoffset:0;
+  animation:drawRoute 1.55s cubic-bezier(.45,.05,.35,1) .2s both;
+}
+@keyframes drawRoute{from{stroke-dashoffset:100}}
+.route .pt-start{fill:var(--ink)}
+.route .pt-end{fill:var(--red)}
+.route .pt-end{animation:fadeIn .4s ease 1.55s both}
+.route .traveller{fill:var(--ink);animation:fadeIn .25s ease .2s both}
+.route text{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:.14em;
+  fill:var(--graphite);
+}
+.route .lbl-start{animation:fadeIn .5s ease .3s both}
+.route .lbl-end{animation:fadeIn .5s ease 1.55s both}
+@keyframes fadeIn{from{opacity:0}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;margin-top:1.5rem}
+h1{
+  margin:0;
+  font-size:clamp(1.85rem,5.4vw,2.95rem);
+  line-height:1.18;
+  font-weight:700;
+  letter-spacing:-.01em;
+  text-wrap:balance;
+}
+.hl-line{
+  display:block;
+  padding-bottom:.1em;
+  clip-path:inset(-1.4em -.25em -.05em 0);
+  animation:penWipe .5s cubic-bezier(.5,.05,.35,1) both;
+}
+.hl-line:nth-child(1){animation-delay:.7s}
+.hl-line:nth-child(2){animation-delay:.98s}
+.hl-line:nth-child(3){animation-delay:1.26s}
+@keyframes penWipe{from{clip-path:inset(-1.4em 100% -.05em 0)}}
+
+.strike{position:relative;white-space:nowrap}
+.strike::after{
+  content:"";
+  position:absolute;
+  left:-3%;right:-3%;
+  top:56%;
+  height:2.5px;
+  border-radius:2px;
+  background:var(--red);
+  transform:scaleX(1) rotate(-1.4deg);
+  transform-origin:left center;
+  animation:strikeDraw .32s ease-out 1.55s both;
+}
+@keyframes strikeDraw{from{transform:scaleX(0) rotate(-1.4deg)}}
+.edit{
+  position:absolute;
+  left:50%;
+  bottom:92%;
+  transform:translateX(-50%) rotate(-3deg);
+  font-family:var(--hand);
+  font-weight:400;
+  font-size:.42em;
+  line-height:1;
+  letter-spacing:0;
+  color:var(--red);
+  white-space:nowrap;
+  animation:popIn .34s cubic-bezier(.3,1.65,.55,1) 1.78s both;
+}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) rotate(-6deg) scale(.5)}}
+
+.lead{max-width:32.5rem;color:var(--ink)}
+.lead p{margin:1.05rem 0 0}
+.lead .p1{animation:riseIn .55s ease 1.35s both}
+.lead .p2{animation:riseIn .55s ease 1.5s both}
+@keyframes riseIn{from{opacity:0;transform:translateY(10px)}}
+.hl-mark{
+  background-image:linear-gradient(var(--hi),var(--hi));
+  background-repeat:no-repeat;
+  background-size:100% .58em;
+  background-position:0 74%;
+  padding:0 .08em;
+  box-decoration-break:clone;
+  -webkit-box-decoration-break:clone;
+}
+
+/* ---------- stamps ---------- */
+.stamp{
+  display:inline-block;
+  position:relative;
+  font-family:var(--mono);
+  color:var(--red);
+  text-transform:uppercase;
+  border:1.5px solid var(--red);
+  opacity:.92;
+}
+.stamp::after{
+  content:"";
+  position:absolute;
+  inset:2.5px;
+  border:1px solid var(--red);
+  pointer-events:none;
+}
+.stamp-main{
+  position:absolute;
+  top:-3.1rem;
+  right:.15rem;
+  padding:.5em .9em;
+  font-size:.66rem;
+  letter-spacing:.18em;
+  transform:rotate(-4deg);
+  animation:thump .45s cubic-bezier(.2,.85,.3,1) 1.8s both;
+}
+@keyframes thump{
+  from{opacity:0;transform:rotate(-4deg) scale(1.5);filter:blur(2px)}
+  to{opacity:.92;transform:rotate(-4deg) scale(1);filter:blur(0)}
+}
+.stamp-sm{
+  padding:.38em .65em;
+  font-size:.55rem;
+  letter-spacing:.075em;
+  transform:rotate(-2.5deg);
+  flex:none;
+}
+
+/* ---------- marginalia ---------- */
+.marginalia{
+  font-family:var(--hand);
+  color:var(--red);
+  font-size:.82rem;
+  line-height:1.35;
+  transform:rotate(-2deg);
+  display:inline-block;
+}
+.marginalia:hover{animation:wiggle .45s ease}
+@keyframes wiggle{
+  0%{transform:rotate(-2deg)}
+  30%{transform:rotate(-3.6deg)}
+  65%{transform:rotate(-.7deg)}
+  100%{transform:rotate(-2deg)}
+}
+.marg-hero{
+  position:absolute;
+  right:-1.1rem;
+  top:62%;
+  width:6.4rem;
+  text-align:center;
+  animation:settle .55s ease 2.1s both;
+}
+@keyframes settle{from{opacity:0;transform:rotate(-5deg)}to{opacity:1;transform:rotate(-2deg)}}
+.marg-now{margin-top:.9rem;transform:rotate(-2deg)}
+
+/* ---------- sections ---------- */
+section{margin-top:3.4rem}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.66rem;
+  font-weight:600;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--graphite);
+  margin:0 0 .9rem;
+}
+.eyebrow .sv{color:var(--red)}
+
+/* ---------- ledger ---------- */
+.ledger{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.note{
+  display:grid;
+  grid-template-columns:6.8rem 1fr auto;
+  gap:.2rem 1.15rem;
+  align-items:baseline;
+  padding:.95rem .55rem .95rem .35rem;
+  border-bottom:1px solid var(--hairline);
+  background-repeat:no-repeat;
+}
+.note:hover{
+  background-image:radial-gradient(150px circle at var(--mx,50%) var(--my,50%),var(--blot),transparent 72%);
+}
+.note .d{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.06em;
+  color:var(--graphite);
+  font-variant-numeric:tabular-nums;
+}
+.note .body{min-width:0}
+.note h3{
+  display:inline;
+  margin:0;
+  font-size:1.06rem;
+  font-weight:700;
+  line-height:1.35;
+}
+.note h3 a{text-decoration:none}
+.note h3 a:hover{color:var(--red)}
+.nt{position:relative}
+.nt::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-2px;
+  height:1px;
+  background:var(--ink);
+  transform:scaleX(1);
+  transform-origin:left;
+}
+.note .desc{
+  display:block;
+  margin-top:.1rem;
+  font-size:.92rem;
+  color:var(--graphite);
+}
+.note .lang{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.1em;
+  color:var(--red);
+}
+.yeardiv{
+  text-align:center;
+  padding:.7rem 0;
+  border-bottom:1px solid var(--hairline);
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.3em;
+  color:var(--graphite);
+}
+
+/* ---------- workbench ---------- */
+.wb-strip{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:.85rem .7rem;
+  border:1px solid var(--line);
+  padding:.8rem .9rem;
+}
+.wb-strip code{
+  font-family:var(--mono);
+  font-size:.74rem;
+  letter-spacing:.02em;
+  color:var(--ink);
+}
+.wb-strip code b{color:var(--red);font-weight:600}
+
+/* ---------- about / now ---------- */
+.duo{
+  display:grid;
+  grid-template-columns:1.25fr 1fr;
+  gap:2.4rem;
+}
+.duo p{margin:.65rem 0 0;font-size:.98rem}
+.todo{list-style:none;margin:.65rem 0 0;padding:0;font-size:.95rem}
+.todo li{display:flex;gap:.6rem;margin-top:.45rem;align-items:baseline}
+.todo .box{font-family:var(--mono);font-size:.78rem;color:var(--graphite);flex:none}
+.todo .done .box{color:var(--red)}
+.todo .done .txt{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1.5px;color:var(--graphite)}
+
+/* ---------- footer ---------- */
+footer{margin-top:3.6rem}
+.rule2-static{
+  height:6px;
+  border-top:2.5px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.foot-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:.4rem 1.5rem;
+  margin-top:.8rem;
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.08em;
+  color:var(--graphite);
+}
+.foot-row a{color:var(--graphite);text-decoration:none;border-bottom:1px solid var(--hairline)}
+.foot-row a:hover{color:var(--red);border-color:var(--red)}
+
+/* ---------- scroll reveal (JS + motion-ok only) ---------- */
+@media (prefers-reduced-motion: no-preference){
+  .js .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  .js .note .nt::after{transform:scaleX(0);transition:transform .7s cubic-bezier(.5,.05,.35,1) .2s}
+  .js .note.in .nt::after{transform:scaleX(1)}
+}
+
+/* ---------- print: everything visible, no reveal states ---------- */
+@media print{
+  .js .reveal{opacity:1 !important;transform:none !important;transition:none !important}
+  .js .note .nt::after{transform:scaleX(1) !important;transition:none !important}
+}
+
+/* ---------- reduced motion: everything static, everything visible ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important}
+  html{scroll-behavior:auto}
+  .route .traveller{display:none}
+}
+
+/* ---------- intermediate widths: shorten ribbon so it clears the nav row ---------- */
+@media (max-width:800px){
+  .ribbon{height:66px}
+  .ribbon:hover,.ribbon:focus-visible{height:72px}
+}
+
+/* ---------- small screens ---------- */
+@media (max-width:600px){
+  body{padding:1.4rem .55rem 3.5rem}
+  .page{padding-top:2.1rem}
+  .entryline{font-size:.6rem;letter-spacing:.11em}
+  .route text{font-size:18px;letter-spacing:.08em}
+  .route .lbl-end{transform:translateY(-7px)}
+  .stamp-main{position:static;display:inline-block;margin:1.15rem 0 0;transform:rotate(-3deg)}
+  .marg-hero{position:static;width:auto;display:block;text-align:right;margin-top:.9rem}
+  .note{grid-template-columns:1fr auto;padding-left:.1rem;padding-right:.3rem}
+  .note .d{order:1}
+  .note .lang{order:2;justify-self:end}
+  .note .body{order:3;grid-column:1 / -1}
+  .duo{grid-template-columns:1fr;gap:2.2rem}
+  .mast{flex-direction:column;gap:.5rem}
+}
+</style>
+
+<a class="ribbon" href="#top" aria-label="Bokmärke — tillbaka till toppen / back to top"></a>
+
+<main class="page" id="top">
+  <header>
+    <div class="mast">
+      <span class="mast-title">FÄLTANTECKNINGAR — A.&nbsp;FERREIRA&nbsp;DE&nbsp;MELO</span>
+      <nav aria-label="Site">
+        <a href="#top" aria-current="page">index</a>
+        <a href="#notes">notes</a>
+        <a href="#about">about</a>
+      </nav>
+    </div>
+    <div class="rule2" aria-hidden="true"></div>
+    <p class="entryline">ENTRY&nbsp;Nº&nbsp;002&nbsp;—&nbsp;INDEX · STOCKHOLM&nbsp;59.33°N · EN/SV/PT</p>
+
+    <svg class="route" viewBox="0 0 680 112" role="img" aria-label="An inked route from São Paulo, minus 23.55 degrees, to Stockholm, 59.33 degrees">
+      <defs>
+        <mask id="routeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="680" height="112">
+          <path class="route-mask-path" d="M40 84 C 190 8, 460 6, 636 40" pathLength="100"
+                fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round"></path>
+        </mask>
+      </defs>
+      <path class="route-ink" d="M40 84 C 190 8, 460 6, 636 40" fill="none"
+            stroke-width="1.6" stroke-dasharray="6 5" stroke-linecap="round"
+            mask="url(#routeMask)"></path>
+      <circle class="pt-start" cx="40" cy="84" r="3"></circle>
+      <circle class="pt-end" cx="636" cy="40" r="3.2"></circle>
+      <circle class="traveller" r="3.4">
+        <animateMotion path="M40 84 C 190 8, 460 6, 636 40" begin="0.2s" dur="1.55s"
+                       fill="freeze" calcMode="spline" keyPoints="0;1" keyTimes="0;1"
+                       keySplines="0.45 0.05 0.35 1"></animateMotion>
+      </circle>
+      <text class="lbl-start" x="40" y="104" text-anchor="start">SÃO PAULO −23.55°</text>
+      <text class="lbl-end" x="640" y="24" text-anchor="end">STOCKHOLM 59.33°</text>
+    </svg>
+  </header>
+
+  <section class="hero" aria-label="Introduction">
+    <h1>
+      <span class="hl-line">A working notebook on</span>
+      <span class="hl-line">data, design &amp; public service —</span>
+      <span class="hl-line">the <span class="strike">polished<span class="edit">in progress</span></span> version, in ink.</span>
+    </h1>
+    <div class="lead">
+      <p class="p1">I work at the intersection of data, design and public service — mostly on making AI <span class="hl-mark">transparent, humane and genuinely useful</span>. Sweden is home now; Brazil will always be the other.</p>
+      <p class="p2">Entries land in English and Swedish, as they happen: rough edges over polished silence. Show process, not polish.</p>
+    </div>
+    <span class="stamp stamp-main" aria-hidden="true">Arbete&nbsp;pågår&nbsp;·&nbsp;est.&nbsp;2025</span>
+    <span class="marginalia marg-hero" lang="sv">skriv varje vecka!</span>
+  </section>
+
+  <section id="notes" aria-labelledby="notes-h">
+    <h2 class="eyebrow" id="notes-h">Latest notes <span class="sv">/ senaste anteckningar</span></h2>
+    <ol class="ledger">
+      <li class="note reveal">
+        <span class="d">2025-10-30</span>
+        <div class="body"><h3><a href="#"><span class="nt">Hello world — why this notebook exists</span></a></h3>
+        <span class="desc">Opening the notebook: rough edges over polished silence.</span></div>
+        <span class="lang">[EN]</span>
+      </li>
+      <li class="note reveal">
+        <span class="d">2025-11-14</span>
+        <div class="body"><h3><a href="#"><span class="nt">What &ldquo;transparent AI&rdquo; means in a public agency</span></a></h3>
+        <span class="desc">Explainability is a design problem before it is a model problem.</span></div>
+        <span class="lang">[EN]</span>
+      </li>
+      <li class="note reveal">
+        <span class="d">2025-12-02</span>
+        <div class="body"><h3><a href="#" lang="sv"><span class="nt">Att bygga en familjebudget i Streamlit</span></a></h3>
+        <span class="desc" lang="sv">CSV-exporter från svenska banker — alla konton i en vy.</span></div>
+        <span class="lang">[SV]</span>
+      </li>
+      <li class="yeardiv reveal">—&nbsp;&nbsp;2026&nbsp;&nbsp;—</li>
+      <li class="note reveal">
+        <span class="d">2026-01-18</span>
+        <div class="body"><h3><a href="#" lang="sv"><span class="nt">Att fotografera vinterljuset</span></a></h3>
+        <span class="desc" lang="sv">Om det låga ljuset i januari och varför kameran alltid följer med.</span></div>
+        <span class="lang">[SV]</span>
+      </li>
+      <li class="note reveal">
+        <span class="d">2026-02-07</span>
+        <div class="body"><h3><a href="#"><span class="nt">Enclosures that actually snap shut</span></a></h3>
+        <span class="desc">Notes from the 3D print lab: tolerances, test fits, and three failed lids.</span></div>
+        <span class="lang">[EN]</span>
+      </li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="wb-h">
+    <h2 class="eyebrow" id="wb-h">Workbench <span class="sv">/ verkstad</span></h2>
+    <div class="wb-strip reveal">
+      <code><b>[x]</b> this website&nbsp;·&nbsp;[&nbsp;] budgetapp&nbsp;·&nbsp;[&nbsp;] 3d print lab</code>
+      <span class="stamp stamp-sm" aria-label="No dates, on purpose">Inga&nbsp;datum&nbsp;—&nbsp;no&nbsp;dates,&nbsp;on&nbsp;purpose</span>
+    </div>
+  </section>
+
+  <section id="about" class="duo" aria-label="About and now">
+    <div class="about reveal">
+      <h2 class="eyebrow">About <span class="sv">/ om</span></h2>
+      <p>Alberto Ferreira de Melo. Data, design and public service — the slow work of making AI something people can actually see through and lean on. Two countries, two languages on this page, one desk.</p>
+      <p>Away from the desk: photography, 3D printing, small electronics. Coffee person, in case the margins didn&rsquo;t give it away.</p>
+    </div>
+    <div class="now reveal">
+      <h2 class="eyebrow">Now <span class="sv">/ nu</span></h2>
+      <ul class="todo">
+        <li class="done"><span class="box">[x]</span><span class="txt">open the notebook — entry nº 001</span></li>
+        <li><span class="box">[&nbsp;]</span><span class="txt">this website — Astro, learning in public</span></li>
+        <li><span class="box">[&nbsp;]</span><span class="txt" lang="sv">budgetapp — alla konton i en vy</span></li>
+        <li><span class="box">[&nbsp;]</span><span class="txt">3d print lab — a lid that snaps shut, first try</span></li>
+      </ul>
+      <span class="marginalia marg-now" lang="sv">kaffe först.</span>
+    </div>
+  </section>
+
+  <footer class="reveal">
+    <div class="rule2-static" aria-hidden="true"></div>
+    <div class="foot-row">
+      <span>© 2026 Alberto Ferreira de Melo</span>
+      <span><a href="#">GitHub</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#">LinkedIn</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="#">RSS</a></span>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  root.classList.add('js');
+
+  /* reveal-on-scroll */
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+      });
+    },{rootMargin:'0px 0px -7% 0px',threshold:0.08});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  }else{
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+  }
+
+  /* ink-wash blot follows the cursor over note rows (rAF-throttled) */
+  document.querySelectorAll('.note').forEach(function(el){
+    var px=0,py=0,queued=false;
+    el.addEventListener('pointermove',function(ev){
+      px=ev.clientX;py=ev.clientY;
+      if(!queued){
+        queued=true;
+        requestAnimationFrame(function(){
+          queued=false;
+          var r=el.getBoundingClientRect();
+          el.style.setProperty('--mx',(px-r.left)+'px');
+          el.style.setProperty('--my',(py-r.top)+'px');
+        });
+      }
+    },{passive:true});
+  });
+})();
+</script>
+</body>
+</html>

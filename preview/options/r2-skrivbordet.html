@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skrivbordet — Alberto Ferreira de Melo</title>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F7F2E4; --ink:#14201C; --mango:#F0A93A; --coral:#E05540; --tealc:#7FB6A8; --brass:#C9A24B;
+  --room:#E6DCC3; --deskfill:#17453E; --plank:rgba(247,242,228,.07);
+  --lamp:0; --cupglow:0; --ledhalo:.16;
+  --ground:#F7F2E4; --text:#14201C; --muted:rgba(20,32,28,.68);
+  --sheetbg:#FFFDF2; --sheetshadow:rgba(20,32,28,.12);
+  --notebg:#FBF6E6;
+  --screen:#10231E; --page:#F7F2E4; --page2:#EFE8D4;
+  --board:#2E6B4F; --metal:#9FADA8; --metal2:#5B6B64;
+  --pegdot:rgba(247,242,228,.16); --tagbg:#F3ECDA;
+  --langen:#9A6A12; --langsv:#2E6B5B;
+  --display:'Avenir Next','Seravek','Segoe UI',sans-serif;
+  --body:Seravek,'Gill Sans Nova',Ubuntu,Calibri,sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --room:#0E1A17; --deskfill:#0F2E28; --plank:rgba(240,169,58,.06);
+    --lamp:.7; --cupglow:.55; --ledhalo:.6;
+    --ground:#1C1915; --text:#EEE7D6; --muted:rgba(238,231,214,.64);
+    --sheetbg:#26211A; --sheetshadow:rgba(0,0,0,.45);
+    --notebg:#F4EDDB; --screen:#1A4438; --tagbg:#F0E8D4;
+    --pegdot:rgba(247,242,228,.12);
+    --langen:#F0A93A; --langsv:#7FB6A8;
+  }
+}
+:root[data-theme="dark"]{
+  --room:#0E1A17; --deskfill:#0F2E28; --plank:rgba(240,169,58,.06);
+  --lamp:.7; --cupglow:.55; --ledhalo:.6;
+  --ground:#1C1915; --text:#EEE7D6; --muted:rgba(238,231,214,.64);
+  --sheetbg:#26211A; --sheetshadow:rgba(0,0,0,.45);
+  --notebg:#F4EDDB; --screen:#1A4438; --tagbg:#F0E8D4;
+  --pegdot:rgba(247,242,228,.12);
+  --langen:#F0A93A; --langsv:#7FB6A8;
+}
+:root[data-theme="light"]{
+  --room:#E6DCC3; --deskfill:#17453E; --plank:rgba(247,242,228,.07);
+  --lamp:0; --cupglow:0; --ledhalo:.16;
+  --ground:#F7F2E4; --text:#14201C; --muted:rgba(20,32,28,.68);
+  --sheetbg:#FFFDF2; --sheetshadow:rgba(20,32,28,.12);
+  --notebg:#FBF6E6; --screen:#10231E; --tagbg:#F3ECDA;
+  --pegdot:rgba(247,242,228,.16);
+  --langen:#9A6A12; --langsv:#2E6B5B;
+}
+html{scroll-behavior:smooth; overflow-x:clip}
+body{
+  margin:0; background:var(--ground); color:var(--text);
+  font-family:var(--body); font-size:16px; line-height:1.55;
+  overflow-x:clip;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--mango); outline-offset:3px; border-radius:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--mango);color:var(--ink);padding:8px 14px;font-family:var(--mono);font-size:13px;z-index:50}
+.skip:focus{left:12px;top:12px}
+.mono{font-family:var(--mono)}
+
+/* ---------- HERO / THE DESK ---------- */
+.heroband{background:var(--room); border-bottom:3px solid var(--deskfill)}
+.hero{position:relative; max-width:1200px; margin:0 auto}
+.hero svg{display:block; width:100%; height:clamp(480px,64vh,620px)}
+@media (max-height:520px){ .hero svg{height:clamp(320px,86vh,430px)} }
+@media (max-width:840px) and (orientation:portrait){
+  .hero svg{height:min(58vh,53vw)}
+  .hero svg.portrait{height:auto; aspect-ratio:720/1100}
+}
+
+.nav{position:absolute; top:0; left:0; right:0; z-index:5;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px clamp(18px,3.4vw,40px); color:var(--paper);
+  font-family:var(--mono); font-size:13.5px; letter-spacing:.02em}
+.nav a{color:var(--paper); text-decoration:none; opacity:.88}
+.nav a:hover{opacity:1; text-decoration:underline; text-underline-offset:4px; text-decoration-color:var(--mango)}
+.nav .links a{margin-left:clamp(12px,2.4vw,26px)}
+.nav .brand{font-weight:600}
+
+.desknote{
+  position:absolute; z-index:4;
+  top:clamp(64px,11vh,104px); left:clamp(16px,4vw,60px);
+  width:min(400px, calc(100vw - 68px));
+  background:var(--notebg); color:#14201C;
+  padding:26px 28px 24px; transform:rotate(-1.5deg);
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
+}
+.desknote h1{margin:0 0 10px; font-family:var(--display); font-weight:800;
+  font-size:clamp(25px,3.2vw,38px); line-height:1.06; letter-spacing:-.02em; color:#14201C}
+.desknote p{margin:0; font-size:15px; line-height:1.5; color:rgba(20,32,28,.82)}
+.desknote .hint{margin-top:14px; font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:rgba(20,32,28,.52)}
+.tape{position:absolute; width:76px; height:22px; background:rgba(255,249,224,.55);
+  border-left:1px dashed rgba(20,32,28,.14); border-right:1px dashed rgba(20,32,28,.14)}
+.tape.t1{top:-11px; left:22px; transform:rotate(-6deg)}
+.tape.t2{top:-9px; right:26px; transform:rotate(5deg)}
+@media (max-width:600px){
+  .desknote{padding:18px 20px 16px}
+  .desknote h1{font-size:24px}
+  .desknote p{font-size:13.5px}
+}
+
+/* SVG object interactions */
+.obj{cursor:pointer; outline:none}
+.obj .lift{transition:transform .2s ease}
+.obj:hover .lift,.obj:focus-visible .lift{transform:translateY(-5px)}
+.obj .shadow{fill:var(--ink); opacity:.18; transition:transform .2s ease, opacity .2s ease;
+  transform-box:fill-box; transform-origin:center}
+.obj:hover .shadow,.obj:focus-visible .shadow{transform:scale(1.16,1.1); opacity:.09}
+.obj .chip{opacity:0; transition:opacity .2s ease; pointer-events:none}
+.obj:hover .chip,.obj:focus-visible .chip{opacity:1}
+.chip rect{fill:var(--paper); stroke:var(--brass); stroke-width:1}
+.chip text{fill:#14201C; font-family:var(--mono); font-size:13.5px; font-weight:600}
+.obj .ring{fill:none; stroke:var(--mango); stroke-width:2.5; stroke-dasharray:6 6; opacity:0}
+.obj:focus-visible .ring{opacity:1}
+.glowlayer{pointer-events:none}
+.lampe{opacity:var(--lamp)}
+.cupg{opacity:var(--cupglow)}
+.ledh{opacity:var(--ledhalo)}
+.blink{animation:blink 2s infinite}
+@keyframes blink{0%,42%{opacity:1}52%,86%{opacity:.14}100%{opacity:1}}
+.steam{stroke:var(--paper); stroke-width:4; stroke-linecap:round; fill:none;
+  opacity:.4; transform-box:fill-box; transform-origin:center bottom;
+  animation:steam 3s ease-out infinite}
+.steam.s2{animation-delay:1.5s}
+@keyframes steam{
+  0%{transform:translateY(10px); opacity:0}
+  30%{opacity:.55}
+  100%{transform:translateY(-26px); opacity:0}
+}
+
+/* ---------- SECTIONS ---------- */
+main{background:var(--ground)}
+section{padding:72px clamp(18px,4vw,32px)}
+.inner{max-width:780px; margin:0 auto}
+h2{font-family:var(--display); font-weight:800; letter-spacing:-.02em;
+  font-size:clamp(26px,3vw,34px); margin:0 0 8px}
+h2 .sub{font-family:var(--mono); font-weight:500; font-size:13px; letter-spacing:.02em; color:var(--muted); white-space:nowrap}
+.lede{margin:0 0 36px; color:var(--muted); font-size:15.5px}
+
+.fan{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:20px}
+.sheet{display:block; text-decoration:none; background:var(--sheetbg);
+  padding:22px 26px 20px; box-shadow:0 8px 22px var(--sheetshadow);
+  transition:transform .2s ease, box-shadow .2s ease}
+.fan li:nth-child(odd) .sheet{transform:rotate(-1deg) translateX(-6px)}
+.fan li:nth-child(even) .sheet{transform:rotate(1deg) translateX(8px)}
+.fan .sheet:hover, .fan .sheet:focus-visible{transform:rotate(0) translateX(0) translateY(-5px); box-shadow:0 16px 32px var(--sheetshadow)}
+.sheet .meta{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+.sheet .date{font-family:var(--mono); font-size:12.5px; letter-spacing:.05em; color:var(--muted)}
+.lang{font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em;
+  border:1.5px solid currentColor; border-radius:999px; padding:2px 9px 1px; line-height:1.4}
+.lang.en{color:var(--langen)}
+.lang.sv{color:var(--langsv)}
+.sheet h3{margin:0 0 6px; font-family:var(--display); font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(19px,2.2vw,23px); line-height:1.2}
+.sheet p{margin:0; font-size:14.5px; color:var(--muted)}
+.allnotes{display:inline-block; margin-top:30px; font-family:var(--mono); font-size:13.5px;
+  color:var(--text); text-decoration:underline; text-underline-offset:4px; text-decoration-color:var(--mango)}
+
+/* pegboard */
+.pegboard{background:var(--deskfill);
+  background-image:radial-gradient(var(--pegdot) 1.6px, transparent 1.8px);
+  background-size:26px 26px; color:var(--paper); padding:56px clamp(18px,4vw,32px) 60px}
+.pegboard .inner{max-width:880px}
+.pegboard h2{color:var(--paper)}
+.pegboard h2 .sub{color:rgba(247,242,228,.6)}
+.tags{display:flex; flex-wrap:wrap; gap:clamp(20px,5vw,56px); justify-content:center; margin:26px 0 8px}
+.hang{display:flex; flex-direction:column; align-items:center; text-decoration:none}
+.hook{width:9px; height:9px; border-radius:50%; background:var(--brass); box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.string{width:2px; height:22px; background:rgba(247,242,228,.5)}
+.tag{position:relative; background:var(--tagbg); color:#14201C; padding:20px 22px 13px;
+  min-width:150px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,.3);
+  transition:transform .2s ease; border-radius:3px}
+.hang:nth-child(odd) .tag{transform:rotate(-2deg)}
+.hang:nth-child(even) .tag{transform:rotate(1.6deg)}
+.hang:hover .tag,.hang:focus-visible .tag{transform:rotate(0) translateY(-3px)}
+.tag::before{content:''; position:absolute; top:7px; left:50%; transform:translateX(-50%);
+  width:11px; height:11px; border-radius:50%; background:var(--deskfill);
+  box-shadow:0 0 0 3px var(--brass)}
+.tag b{display:block; font-family:var(--display); font-weight:700; font-size:16.5px; letter-spacing:-.01em; margin-top:4px}
+.tag span{display:block; font-family:var(--mono); font-size:11px; color:rgba(20,32,28,.6); margin-top:3px}
+.pegcaption{text-align:center; font-family:var(--mono); font-size:12.5px;
+  color:rgba(247,242,228,.62); margin:26px 0 0; font-style:italic}
+
+/* about */
+.about blockquote{margin:0 0 26px; display:inline-block; background:var(--sheetbg);
+  box-shadow:0 8px 20px var(--sheetshadow); padding:14px 22px; transform:rotate(-1deg);
+  font-family:var(--display); font-weight:700; font-size:19px; letter-spacing:-.01em}
+.about blockquote .mono{display:block; font-family:var(--mono); font-weight:500; font-size:11.5px; color:var(--muted); margin-top:4px}
+.about p{max-width:620px; font-size:16.5px}
+
+/* footer */
+footer{background:var(--deskfill); color:var(--paper); padding:38px clamp(18px,4vw,32px);
+  font-family:var(--mono); font-size:13px}
+footer .inner{max-width:880px; display:flex; flex-wrap:wrap; gap:10px 26px; justify-content:space-between}
+footer a{color:var(--paper); text-decoration:underline; text-underline-offset:4px; text-decoration-color:rgba(247,242,228,.4)}
+footer a:hover{text-decoration-color:var(--mango)}
+footer .flinks a{margin-left:18px}
+footer .flinks a:first-child{margin-left:0}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important; transition:none !important}
+  html{scroll-behavior:auto}
+  .steam{opacity:.4}
+}
+</style>
+
+<a class="skip" href="#notes">Hoppa till anteckningar / skip to notes</a>
+
+<div class="heroband" id="top">
+  <div class="hero" id="hero">
+    <svg id="desk" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid slice" role="group"
+         aria-label="Skrivbordet uppifrån — the desk from above; every object is a link.">
+      <defs>
+        <pattern id="wood" width="140" height="96" patternUnits="userSpaceOnUse">
+          <rect width="140" height="96" fill="var(--deskfill)"/>
+          <rect y="47" width="140" height="1" fill="var(--plank)" opacity=".55"/>
+          <rect y="95" width="140" height="1" fill="var(--plank)"/>
+        </pattern>
+        <radialGradient id="lampg">
+          <stop offset="0" stop-color="#F0A93A" stop-opacity=".5"/>
+          <stop offset=".55" stop-color="#F0A93A" stop-opacity=".14"/>
+          <stop offset="1" stop-color="#F0A93A" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="cupgg">
+          <stop offset="0" stop-color="#F0A93A" stop-opacity=".5"/>
+          <stop offset="1" stop-color="#F0A93A" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <rect x="-200" y="-200" width="1600" height="1500" fill="var(--room)"/>
+      <rect id="deskrect" x="24" y="20" width="1152" height="600" rx="20" fill="url(#wood)"/>
+
+      <g class="glowlayer">
+        <ellipse id="lamp" class="lampe" cx="1020" cy="90" rx="620" ry="460" fill="url(#lampg)"/>
+        <circle id="cupglow" class="cupg" cx="1035" cy="385" r="115" fill="url(#cupgg)"/>
+      </g>
+
+      <g id="objs">
+
+        <!-- NOTEBOOK -->
+        <a class="obj" href="#notes" aria-label="Anteckningar — notes">
+          <g id="o-nb" transform="translate(280,435)">
+            <ellipse class="shadow" cx="7" cy="13" rx="166" ry="116"/>
+            <g class="lift">
+              <g transform="rotate(-2)">
+                <rect x="-158" y="-108" width="316" height="216" rx="12" fill="var(--tealc)"/>
+                <rect x="-146" y="-96" width="146" height="192" rx="4" fill="var(--page)"/>
+                <rect x="0" y="-96" width="146" height="192" rx="4" fill="var(--page2)"/>
+                <line x1="0" y1="-88" x2="0" y2="88" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="3 7" opacity=".35"/>
+                <path d="M-128 -22H-18M-128 4H-18M-128 30H-18M-128 56H-18" stroke="var(--tealc)" opacity=".55" fill="none"/>
+                <path d="M18 -22H128M18 4H128M18 30H128M18 56H128" stroke="var(--tealc)" opacity=".55" fill="none"/>
+                <path d="M-128 -66 h72 M-128 -52 h94" stroke="var(--ink)" stroke-width="2.5" opacity=".32" stroke-linecap="round" fill="none"/>
+                <path d="M18 -66 h56" stroke="var(--coral)" stroke-width="2.5" opacity=".55" stroke-linecap="round" fill="none"/>
+                <rect x="60" y="88" width="14" height="34" rx="3" fill="var(--coral)"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(64,-126)">
+              <rect x="-96" y="-16" width="192" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">anteckningar · notes</text>
+            </g>
+            <rect class="ring" x="-174" y="-124" width="348" height="252" rx="18"/>
+          </g>
+        </a>
+
+        <!-- CAMERA -->
+        <a class="obj" href="#om" aria-label="Foto — photography">
+          <g id="o-cam" transform="translate(950,180)">
+            <ellipse class="shadow" cx="6" cy="14" rx="104" ry="62"/>
+            <g class="lift">
+              <g transform="rotate(2)">
+                <rect x="-95" y="-55" width="190" height="30" rx="15" fill="var(--metal)"/>
+                <rect x="-95" y="-34" width="190" height="89" rx="15" fill="var(--ink)"/>
+                <circle cx="-97" cy="-2" r="5" fill="var(--metal)"/>
+                <circle cx="97" cy="-2" r="5" fill="var(--metal)"/>
+                <rect x="44" y="-62" width="26" height="12" rx="6" fill="var(--coral)"/>
+                <circle cx="-58" cy="-44" r="8" fill="var(--brass)"/>
+                <line x1="-58" y1="-50" x2="-58" y2="-44" stroke="var(--ink)" stroke-width="2"/>
+                <circle cx="0" cy="8" r="42" fill="#0B120F" stroke="var(--metal)" stroke-width="3"/>
+                <circle cx="0" cy="8" r="30" fill="none" stroke="var(--brass)" stroke-width="2"/>
+                <circle cx="0" cy="8" r="17" fill="#20342D"/>
+                <circle cx="8" cy="0" r="4.5" fill="#F7F2E4" opacity=".8"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(0,116)">
+              <rect x="-88" y="-16" width="176" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">foto · photography</text>
+            </g>
+            <rect class="ring" x="-114" y="-78" width="228" height="158" rx="18"/>
+          </g>
+        </a>
+
+        <!-- 3D PRINTED BOX + HEX KEY -->
+        <a class="obj" href="#verkstad" aria-label="3D-labbet — print lab">
+          <g id="o-box" transform="translate(655,175)">
+            <ellipse class="shadow" cx="8" cy="12" rx="76" ry="50"/>
+            <g class="lift">
+              <rect x="-52" y="-42" width="104" height="84" rx="10" fill="var(--mango)"/>
+              <rect x="-40" y="-30" width="80" height="60" rx="6" fill="none" stroke="var(--ink)" stroke-width="1.5" opacity=".28"/>
+              <path d="M-40 -12 h80 M-40 2 h80 M-40 16 h80" stroke="var(--ink)" opacity=".1" fill="none"/>
+              <circle cx="-42" cy="-32" r="3" fill="var(--ink)" opacity=".45"/>
+              <circle cx="42" cy="-32" r="3" fill="var(--ink)" opacity=".45"/>
+              <circle cx="-42" cy="32" r="3" fill="var(--ink)" opacity=".45"/>
+              <circle cx="42" cy="32" r="3" fill="var(--ink)" opacity=".45"/>
+              <g transform="translate(80,10) rotate(28)">
+                <rect x="-4" y="-28" width="8" height="46" rx="4" fill="var(--metal2)"/>
+                <rect x="-4" y="10" width="26" height="8" rx="4" fill="var(--metal2)"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(0,102)">
+              <rect x="-100" y="-16" width="200" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">3d-labbet · print lab</text>
+            </g>
+            <rect class="ring" x="-68" y="-58" width="180" height="120" rx="14"/>
+          </g>
+        </a>
+
+        <!-- MICROCONTROLLER -->
+        <a class="obj" href="#verkstad" aria-label="Elektronik — electronics">
+          <g id="o-mcu" transform="translate(610,345)">
+            <ellipse class="shadow" cx="6" cy="12" rx="72" ry="46"/>
+            <g class="lift">
+              <g transform="rotate(-4)">
+                <rect x="-52" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="-38" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="-24" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="-10" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="4" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="18" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="32" y="-46" width="7" height="10" fill="var(--brass)"/><rect x="46" y="-46" width="7" height="10" fill="var(--brass)"/>
+                <rect x="-52" y="36" width="7" height="10" fill="var(--brass)"/><rect x="-38" y="36" width="7" height="10" fill="var(--brass)"/><rect x="-24" y="36" width="7" height="10" fill="var(--brass)"/><rect x="-10" y="36" width="7" height="10" fill="var(--brass)"/><rect x="4" y="36" width="7" height="10" fill="var(--brass)"/><rect x="18" y="36" width="7" height="10" fill="var(--brass)"/><rect x="32" y="36" width="7" height="10" fill="var(--brass)"/><rect x="46" y="36" width="7" height="10" fill="var(--brass)"/>
+                <rect x="-62" y="-38" width="124" height="76" rx="8" fill="var(--board)"/>
+                <rect x="-76" y="-11" width="20" height="22" rx="2" fill="var(--metal)"/>
+                <rect x="-18" y="-14" width="36" height="28" rx="3" fill="var(--ink)"/>
+                <rect x="30" y="6" width="14" height="7" rx="2" fill="var(--page)" opacity=".8"/>
+                <rect x="-40" y="18" width="14" height="7" rx="2" fill="var(--page)" opacity=".8"/>
+                <g class="blink">
+                  <circle class="ledh" cx="36" cy="-18" r="10" fill="var(--coral)"/>
+                  <circle cx="36" cy="-18" r="4" fill="var(--coral)"/>
+                </g>
+              </g>
+            </g>
+            <g class="chip" transform="translate(0,92)">
+              <rect x="-112" y="-16" width="224" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">elektronik · electronics</text>
+            </g>
+            <rect class="ring" x="-90" y="-60" width="180" height="120" rx="12"/>
+          </g>
+        </a>
+
+        <!-- COFFEE -->
+        <a class="obj" href="#om" aria-label="Kaffe — always">
+          <g id="o-cup" transform="translate(1035,385)">
+            <ellipse class="shadow" cx="6" cy="10" rx="53" ry="50"/>
+            <g class="lift">
+              <ellipse cx="58" cy="0" rx="19" ry="13" fill="var(--page)"/>
+              <ellipse cx="61" cy="0" rx="8" ry="5" fill="var(--deskfill)"/>
+              <circle cx="0" cy="0" r="46" fill="var(--page)"/>
+              <circle cx="0" cy="0" r="35" fill="#3E2313"/>
+              <circle cx="0" cy="0" r="33" fill="none" stroke="#D9985A" stroke-width="4.5" opacity=".9"/>
+              <ellipse cx="-10" cy="-12" rx="8" ry="4" fill="#D9985A" opacity=".5"/>
+              <g transform="translate(-8,-58)">
+                <path class="steam" d="M0 0 C-7 -10 7 -18 0 -30"/>
+              </g>
+              <g transform="translate(12,-64)">
+                <path class="steam s2" d="M0 0 C-7 -10 7 -18 0 -30"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(-140,-82)">
+              <rect x="-72" y="-16" width="144" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">kaffe · always</text>
+            </g>
+            <rect class="ring" x="-60" y="-64" width="148" height="128" rx="22"/>
+          </g>
+        </a>
+
+        <!-- PHONE / BUDGETAPP -->
+        <a class="obj" href="#verkstad" aria-label="BudgetApp — Streamlit">
+          <g id="o-ph" transform="translate(845,462)">
+            <ellipse class="shadow" cx="6" cy="12" rx="56" ry="96"/>
+            <g class="lift">
+              <g transform="rotate(3)">
+                <rect x="-46" y="-92" width="92" height="184" rx="18" fill="var(--ink)"/>
+                <rect x="-38" y="-80" width="76" height="160" rx="10" fill="var(--screen)"/>
+                <circle cx="0" cy="-86" r="2.5" fill="#3A4A44"/>
+                <rect x="-30" y="-68" width="40" height="4.5" rx="2.25" fill="#F7F2E4" opacity=".55"/>
+                <rect x="-30" y="-58" width="24" height="4.5" rx="2.25" fill="#F7F2E4" opacity=".35"/>
+                <rect x="-32" y="16" width="13" height="46" fill="var(--mango)"/>
+                <rect x="-15" y="-24" width="13" height="86" fill="var(--coral)"/>
+                <rect x="2" y="32" width="13" height="30" fill="var(--mango)"/>
+                <rect x="19" y="-2" width="13" height="64" fill="var(--coral)"/>
+                <line x1="-34" y1="64" x2="34" y2="64" stroke="#F7F2E4" stroke-width="2" opacity=".4"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(-166,0)">
+              <rect x="-100" y="-16" width="200" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">budgetapp · streamlit</text>
+            </g>
+            <rect class="ring" x="-62" y="-106" width="124" height="212" rx="24"/>
+          </g>
+        </a>
+
+        <!-- PEN (flavor) -->
+        <a class="obj" href="#om" aria-label="Penna — just a pen">
+          <g id="o-pen" transform="translate(505,520)">
+            <g transform="rotate(-32)">
+              <ellipse class="shadow" cx="5" cy="9" rx="74" ry="13"/>
+              <g class="lift">
+                <rect x="-65" y="-6" width="118" height="12" rx="6" fill="var(--coral)"/>
+                <rect x="38" y="-6" width="7" height="12" fill="var(--ink)" opacity=".3"/>
+                <path d="M53 -6 L78 0 L53 6 Z" fill="var(--brass)"/>
+                <rect x="-60" y="-3" width="30" height="2.5" rx="1.25" fill="#F7F2E4" opacity=".35"/>
+              </g>
+            </g>
+            <g class="chip" transform="translate(0,-58)">
+              <rect x="-72" y="-16" width="144" height="32" rx="16"/>
+              <text x="0" y="5" text-anchor="middle">penna · analog</text>
+            </g>
+            <rect class="ring" x="-82" y="-52" width="164" height="104" rx="16"/>
+          </g>
+        </a>
+
+      </g>
+    </svg>
+
+    <header class="nav">
+      <a class="brand" href="#top">ferreirademelo.com</a>
+      <nav class="links" aria-label="Site">
+        <a href="#top">index</a>
+        <a href="#notes">notes</a>
+        <a href="#om">about</a>
+      </nav>
+    </header>
+
+    <div class="desknote">
+      <span class="tape t1"></span><span class="tape t2"></span>
+      <h1>Hej — this is my desk.</h1>
+      <p>Everything on it eventually becomes a note. Data &amp; design by day; cameras, printers and small electronics by night.</p>
+      <p class="hint">hovra eller tryck på sakerna · hover or tap the objects</p>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="notes" aria-label="Senaste anteckningar — latest notes">
+    <div class="inner">
+      <h2>Senaste anteckningar <span class="sub">/ latest notes</span></h2>
+      <p class="lede">Anteckningarna är ryggraden här — the notes are the spine of this site.</p>
+      <ol class="fan">
+        <li>
+          <a class="sheet" href="#">
+            <div class="meta"><span class="date">2026-02-07</span><span class="lang en">EN</span></div>
+            <h3>Enclosures that actually snap shut</h3>
+            <p>Notes from the 3D print lab: tolerances, test fits, and three failed lids.</p>
+          </a>
+        </li>
+        <li>
+          <a class="sheet" href="#">
+            <div class="meta"><span class="date">2026-01-18</span><span class="lang sv">SV</span></div>
+            <h3>Att fotografera vinterljuset</h3>
+            <p>Om det låga ljuset i januari och varför kameran alltid följer med.</p>
+          </a>
+        </li>
+        <li>
+          <a class="sheet" href="#">
+            <div class="meta"><span class="date">2025-12-02</span><span class="lang sv">SV</span></div>
+            <h3>Att bygga en familjebudget i Streamlit</h3>
+            <p>CSV-exporter från svenska banker — alla konton i en vy.</p>
+          </a>
+        </li>
+        <li>
+          <a class="sheet" href="#">
+            <div class="meta"><span class="date">2025-11-14</span><span class="lang en">EN</span></div>
+            <h3>What &lsquo;transparent AI&rsquo; means in a public agency</h3>
+            <p>Explainability is a design problem before it is a model problem.</p>
+          </a>
+        </li>
+        <li>
+          <a class="sheet" href="#">
+            <div class="meta"><span class="date">2025-10-30</span><span class="lang en">EN</span></div>
+            <h3>Hello world — why this notebook exists</h3>
+            <p>Opening the notebook: rough edges over polished silence.</p>
+          </a>
+        </li>
+      </ol>
+      <a class="allnotes" href="#">alla anteckningar · all notes →</a>
+    </div>
+  </section>
+
+  <section id="verkstad" class="pegboard" aria-label="Arbetsbänken — workbench">
+    <div class="inner">
+      <h2>Arbetsbänken <span class="sub">/ workbench</span></h2>
+      <div class="tags">
+        <a class="hang" href="#">
+          <span class="hook"></span><span class="string"></span>
+          <span class="tag"><b>BudgetApp</b><span>familjebudget · streamlit</span></span>
+        </a>
+        <a class="hang" href="#">
+          <span class="hook"></span><span class="string"></span>
+          <span class="tag"><b>This website</b><span>astro · learning in public</span></span>
+        </a>
+        <a class="hang" href="#">
+          <span class="hook"></span><span class="string"></span>
+          <span class="tag"><b>3D print lab</b><span>tolerances &amp; test fits</span></span>
+        </a>
+      </div>
+      <p class="pegcaption">uppdateras sällan — updated rarely, and that is fine</p>
+    </div>
+  </section>
+
+  <section id="om" class="about" aria-label="Om — about">
+    <div class="inner">
+      <h2>Om <span class="sub">/ about</span></h2>
+      <blockquote>&ldquo;Show process, not polish.&rdquo;<span class="mono">— husregeln · the house rule</span></blockquote>
+      <p>I work at the intersection of data, design and public service — mostly trying to make AI transparent, humane and genuinely useful. Sweden is home now; Brazil will always be the other.</p>
+      <p>I write here in English and in Swedish, whichever language the note arrives in. Off the clock it is photography, 3D printing and small electronics. Always coffee.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="inner">
+    <span>© 2026 Alberto Ferreira de Melo</span>
+    <span class="flinks">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">RSS</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var svg = document.getElementById('desk');
+  var hero = document.getElementById('hero');
+  var objs = document.getElementById('objs');
+  if(!svg || !hero || !objs) return;
+
+  /* ----- portrait recomposition ----- */
+  var POS = {
+    'o-pen': { d:'translate(505,520)',  m:'translate(430,690) scale(.9)' },
+    'o-nb':  { d:'translate(280,435)',  m:'translate(250,1000) scale(.85)' },
+    'o-cam': { d:'translate(950,180)',  m:'translate(195,620) scale(.9)' },
+    'o-box': { d:'translate(655,175)',  m:'translate(530,610) scale(.9)' },
+    'o-mcu': { d:'translate(610,345)',  m:'translate(240,780) scale(.9)' },
+    'o-cup': { d:'translate(1035,385)', m:'translate(555,790) scale(.9)' },
+    'o-ph':  { d:'translate(845,462)',  m:'translate(560,975) scale(.9)' }
+  };
+  var deskRect = document.getElementById('deskrect');
+  var lamp = document.getElementById('lamp');
+  var cupglow = document.getElementById('cupglow');
+  var mqP = window.matchMedia('(max-width: 840px) and (orientation: portrait)');
+
+  function layout(){
+    var m = mqP.matches;
+    svg.setAttribute('viewBox', m ? '0 0 720 1100' : '0 0 1200 640');
+    svg.classList.toggle('portrait', m);
+    for(var id in POS){
+      var el = document.getElementById(id);
+      if(el) el.setAttribute('transform', m ? POS[id].m : POS[id].d);
+    }
+    if(deskRect){
+      if(m){ deskRect.setAttribute('x',16); deskRect.setAttribute('y',24); deskRect.setAttribute('width',688); deskRect.setAttribute('height',1052); }
+      else { deskRect.setAttribute('x',24); deskRect.setAttribute('y',20); deskRect.setAttribute('width',1152); deskRect.setAttribute('height',600); }
+    }
+    if(lamp){
+      if(m){ lamp.setAttribute('cx',600); lamp.setAttribute('cy',80); lamp.setAttribute('rx',520); lamp.setAttribute('ry',430); }
+      else { lamp.setAttribute('cx',1020); lamp.setAttribute('cy',90); lamp.setAttribute('rx',620); lamp.setAttribute('ry',460); }
+    }
+    if(cupglow){
+      if(m){ cupglow.setAttribute('cx',555); cupglow.setAttribute('cy',790); }
+      else { cupglow.setAttribute('cx',1035); cupglow.setAttribute('cy',385); }
+    }
+  }
+  if(mqP.addEventListener) mqP.addEventListener('change', layout);
+  else if(mqP.addListener) mqP.addListener(layout);
+  layout();
+
+  /* ----- mouse parallax (lerped, pointer:fine only, respects reduced motion) ----- */
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(fine && !noMotion){
+    var tx=0, ty=0, cx=0, cy=0, raf=null;
+    function clamp(v){ return Math.max(-5, Math.min(5, v)); }
+    function tick(){
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      objs.setAttribute('transform', 'translate(' + cx.toFixed(2) + ',' + cy.toFixed(2) + ')');
+      if(Math.abs(tx-cx) > 0.05 || Math.abs(ty-cy) > 0.05){ raf = requestAnimationFrame(tick); }
+      else { raf = null; }
+    }
+    function go(){ if(!raf) raf = requestAnimationFrame(tick); }
+    hero.addEventListener('pointermove', function(e){
+      var r = hero.getBoundingClientRect();
+      tx = clamp((0.5 - (e.clientX - r.left) / r.width) * 12);
+      ty = clamp((0.5 - (e.clientY - r.top) / r.height) * 12);
+      go();
+    });
+    hero.addEventListener('pointerleave', function(){ tx = 0; ty = 0; go(); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 1 — Clean & Professional</title>
+</head>
+<body>
+<style>
+  :root {
+    --ground: #f6f7f5;
+    --surface: #ffffff;
+    --ink: #1e2422;
+    --muted: #5a6560;
+    --hairline: #dde2dd;
+    --accent: #1f6e63;
+    --accent-soft: #e4efec;
+    --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+    --sans: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
+    --mono: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #171a19;
+      --surface: #1f2422;
+      --ink: #e8ebe9;
+      --muted: #9aa6a1;
+      --hairline: #313835;
+      --accent: #63b8ab;
+      --accent-soft: #24332f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #171a19;
+    --surface: #1f2422;
+    --ink: #e8ebe9;
+    --muted: #9aa6a1;
+    --hairline: #313835;
+    --accent: #63b8ab;
+    --accent-soft: #24332f;
+  }
+  :root[data-theme="light"] {
+    --ground: #f6f7f5;
+    --surface: #ffffff;
+    --ink: #1e2422;
+    --muted: #5a6560;
+    --hairline: #dde2dd;
+    --accent: #1f6e63;
+    --accent-soft: #e4efec;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    font-size: 1.0625rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+  .wrap { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  .label {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* ---- header ---- */
+  header.site {
+    border-bottom: 1px solid var(--hairline);
+    background: var(--ground);
+  }
+  .site-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.4rem 0;
+    flex-wrap: wrap;
+  }
+  .wordmark { font-family: var(--serif); font-size: 1.15rem; letter-spacing: 0.01em; }
+  .wordmark span { color: var(--accent); }
+  nav.main { display: flex; gap: 1.75rem; }
+  nav.main a {
+    font-size: 0.9rem;
+    color: var(--muted);
+    padding-bottom: 0.2rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav.main a:hover, nav.main a[aria-current="page"] { color: var(--ink); border-color: var(--accent); }
+
+  /* ---- hero ---- */
+  .hero { padding: 4.5rem 0 3.5rem; border-bottom: 1px solid var(--hairline); }
+  .hero .label { margin-bottom: 1.1rem; }
+  .hero h1 {
+    margin: 0 0 1.2rem;
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(2.1rem, 4.5vw, 3.3rem);
+    line-height: 1.15;
+    text-wrap: balance;
+    max-width: 22ch;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { max-width: 54ch; color: var(--muted); margin: 0 0 2rem; }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 0.65rem 1.4rem;
+    border-radius: 3px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+  }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ---- main grid ---- */
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 17rem;
+    gap: 4rem;
+    padding: 3.5rem 0;
+  }
+  @media (max-width: 52rem) { .cols { grid-template-columns: 1fr; gap: 3rem; } }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+  }
+  .section-head h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 1.45rem; }
+  .section-head a { font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+  .section-head a:hover { text-decoration: underline; }
+
+  .note-list { list-style: none; margin: 0; padding: 0; display: grid; }
+  .note-list li { border-top: 1px solid var(--hairline); }
+  .note-list li:last-child { border-bottom: 1px solid var(--hairline); }
+  .note-list a {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: 1.35rem 0.25rem;
+    transition: background 0.15s;
+    border-radius: 4px;
+  }
+  .note-list a:hover { background: var(--accent-soft); }
+  @media (max-width: 40rem) { .note-list a { grid-template-columns: 1fr; gap: 0.4rem; } }
+  .note-meta { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); padding-top: 0.3rem; display: grid; gap: 0.25rem; align-content: start; }
+  .note-meta .lang { color: var(--accent); font-weight: 600; }
+  .note-body h3 { margin: 0 0 0.35rem; font-family: var(--serif); font-weight: 500; font-size: 1.15rem; }
+  .note-body p { margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 52ch; }
+
+  /* ---- sidebar ---- */
+  aside .card {
+    border: 1px solid var(--hairline);
+    background: var(--surface);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  aside h2 { margin: 0 0 0.9rem; font-family: var(--serif); font-weight: 500; font-size: 1.15rem; }
+  aside p { margin: 0 0 0.8rem; color: var(--muted); font-size: 0.92rem; }
+  aside p:last-child { margin-bottom: 0; }
+  .now-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+  .now-list li { display: flex; gap: 0.6rem; font-size: 0.92rem; color: var(--muted); }
+  .now-list li::before { content: ""; flex: 0 0 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 0.55rem; }
+
+  /* ---- projects ---- */
+  .projects { padding: 0 0 4rem; }
+  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; }
+  .project {
+    border: 1px solid var(--hairline);
+    background: var(--surface);
+    border-radius: 4px;
+    padding: 1.5rem;
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .project:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .status {
+    justify-self: start;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+  }
+  .project h3 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 1.15rem; }
+  .project p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+  footer.site {
+    border-top: 1px solid var(--hairline);
+    padding: 2.2rem 0 3rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  footer.site .links { display: flex; gap: 1.5rem; }
+  footer.site a:hover { color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<header class="site">
+  <div class="wrap site-bar">
+    <a class="wordmark" href="#">ferreirademelo<span>.com</span></a>
+    <nav class="main" aria-label="Main">
+      <a href="#" aria-current="page">Home</a>
+      <a href="#">Notes</a>
+      <a href="#">Projects</a>
+      <a href="#">About</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <p class="label">Data · Design · Public service</p>
+    <h1>Alberto Ferreira de Melo works on making AI <em>transparent, humane and useful</em>.</h1>
+    <p>This site is a working notebook — notes in English and Swedish, side projects, and ideas shared before they are fully formed. The goal is to show process, not polish.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#">Read the notes</a>
+      <a class="btn ghost" href="#">About me</a>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section aria-labelledby="notes-h">
+      <div class="section-head">
+        <h2 id="notes-h">Latest notes</h2>
+        <a href="#">All notes →</a>
+      </div>
+      <ul class="note-list">
+        <li>
+          <a href="#">
+            <div class="note-meta"><span>30 Oct 2025</span><span class="lang">EN</span></div>
+            <div class="note-body">
+              <h3>Hello world — why this notebook exists</h3>
+              <p>Opening the notebook: what I hope this space becomes, and why I'd rather publish rough edges than wait for polish.</p>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <div class="note-meta"><span>14 Nov 2025</span><span class="lang">EN</span></div>
+            <div class="note-body">
+              <h3>What "transparent AI" means in a public agency</h3>
+              <p>Notes from the trenches: explainability is a design problem long before it is a model problem.</p>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <div class="note-meta"><span>02 Dec 2025</span><span class="lang">SV</span></div>
+            <div class="note-body">
+              <h3>Att bygga en familjebudget i Streamlit</h3>
+              <p>Hur jag läser in CSV-exporter från svenska banker och kopplar ihop alla konton i en enda vy.</p>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <aside>
+      <div class="card">
+        <h2>About</h2>
+        <p>I work at the intersection of data, design and public service. Sweden is home now; Brazil will always be the other.</p>
+        <p>Outside of work: photography, 3D printing and small electronics.</p>
+      </div>
+      <div class="card">
+        <h2>Now</h2>
+        <ul class="now-list">
+          <li>Building BudgetApp in Streamlit</li>
+          <li>Learning Astro with this site</li>
+          <li>Writing in EN and SV</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <section class="projects" aria-labelledby="projects-h">
+    <div class="section-head">
+      <h2 id="projects-h">Projects &amp; experiments</h2>
+      <a href="#">All projects →</a>
+    </div>
+    <div class="project-grid">
+      <a class="project" href="#">
+        <span class="status">In progress</span>
+        <h3>BudgetApp</h3>
+        <p>Personal budgeting tool with CSV import from Swedish banks — all accounts, one view.</p>
+      </a>
+      <a class="project" href="#">
+        <span class="status">In progress</span>
+        <h3>Personal webpage</h3>
+        <p>This site: learning Astro and building a calm home for thoughts in progress.</p>
+      </a>
+      <a class="project" href="#">
+        <span class="status">Workbench</span>
+        <h3>3D print lab</h3>
+        <p>Small functional prints and electronics enclosures — documenting what works.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;width:100%;">
+    <span>© 2026 Alberto Ferreira de Melo</span>
+    <span class="links"><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a></span>
+  </div>
+</footer>
+</body>
+</html>
