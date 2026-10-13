@@ -1,17 +1,36 @@
 {
-  "name": "notes-on-tech",
+  "name": "ferreirademelo.com",
+  "version": "1.0.0",
+  "private": true,
   "type": "module",
-  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "deploy": "astro build && gh-pages -d dist --dotfiles"
+    "dev": "vinext dev",
+    "build": "node scripts/build-static.mjs",
+    "test": "node --experimental-strip-types --test tests/aurora.test.ts",
+    "lint": "oxlint",
+    "format": "oxfmt"
   },
   "dependencies": {
-    "@fontsource-variable/bodoni-moda": "^5.2.7",
-    "astro": "^5.15.3",
-    "gh-pages": "^6.3.0"
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-server-dom-webpack": "19.2.8",
+    "vinext": "1.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.37",
+    "oxfmt": "0.73.0",
+    "oxlint": "1.76.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vite": "8.3.4"
   }
 }
