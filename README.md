@@ -2,7 +2,7 @@
 
 A personal website for Alberto Ferreira de Melo Filho about curiosity, small experiments, and what they teach. Built with React, Vinext, and an original WebGL aurora. The opening follows the flow of a launch page: one luminous object in the centre with the name split to either side; as it is scrolled the name parts, the curtains turn from upright to edge-on, and a single statement takes their place. At the footer the same flat line returns from below and stands upright again above the closing question.
 
-The mark is a winged anvil: *ferreiro* (blacksmith, Ferreira) and *melro* (blackbird, Melo) as one shape, with the anvil's horn as the beak. `app/mark-paths.ts` holds the path data, `app/mark.tsx` the variants, and `/marks` (development only) the review sheet of alternatives.
+The mark is a left-facing bird whose breast flows into an anvil, drawn with tapered pen-like lines. `app/anvil-bird-paths.ts` holds the approved path data; `AnvilBirdMark` in `app/mark.tsx` displays it in warm ivory. A CSS container query uses the refined drawing at a displayed width of 64px or above, and the heavier compact drawing below 64px. The header is 64px on desktop and 48px on phones. Earlier logo variants are retained in `app/mark.tsx` and `app/mark-paths.ts`.
 
 ## Development
 
@@ -10,7 +10,7 @@ Run `npm install` and `npm run dev`. `npm run build` writes the finished site to
 
 `npm test` checks that the opening never stalls or overshoots while scrolled, continuity at every handoff, the upward exit and upward arrival, that the closing curtain clears the footer text on desktop, laptop, ultrawide, and phone viewports, pose bounds, and mesh indices. Requires Node 22.13+.
 
-`node --experimental-strip-types scripts/generate-mark.mjs` regenerates the favicon from `app/mark-paths.ts` after mark changes.
+`node --experimental-strip-types scripts/generate-mark.mjs` regenerates the compact favicon and the transparent, text-free `public/assets/anvil-bird-refined.svg` and `public/assets/anvil-bird-compact.svg` exports from the approved path data after mark changes.
 
 In development only, `/?qa=1` exposes controls for actual WebGL context loss/restoration and the reduced-motion rendering path. These controls are excluded from production. The canvas exposes sampled render count, light opacity, quality level, measured frame interval, and whether high dynamic range is in use (`data-range`) as DOM data attributes for read-only inspection.
 

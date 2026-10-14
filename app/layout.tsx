@@ -49,6 +49,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link
+          rel="icon"
+          href="/favicon.svg?v=anvil-bird-20261014"
+          type="image/svg+xml"
+        />
         {process.env.NODE_ENV === 'production' && (
           <meta
             httpEquiv="Content-Security-Policy"

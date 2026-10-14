@@ -1,4 +1,5 @@
 import { ANVIL, BEAK, BEAK_COLOR, BIRD, EYE, LEGS, WINGED } from './mark-paths';
+import { ANVIL_BIRD_PATHS, ANVIL_BIRD_VIEWBOX } from './anvil-bird-paths';
 
 type MarkProps = { className?: string; title?: string };
 
@@ -6,6 +7,27 @@ const frame = (title?: string) =>
   title
     ? ({ role: 'img', 'aria-label': title } as const)
     : ({ 'aria-hidden': true } as const);
+
+// The wrapper measures the displayed width. A container query adds the
+// compact outline below 64px, including before JavaScript loads.
+export function AnvilBirdMark({ className = '', title }: MarkProps) {
+  return (
+    <span className={`anvil-bird-mark ${className}`.trim()}>
+      <svg
+        viewBox={ANVIL_BIRD_VIEWBOX}
+        width="252"
+        height="162"
+        {...frame(title)}
+      >
+        <g className="anvil-bird-lines" fill="currentColor">
+          {ANVIL_BIRD_PATHS.map((path) => (
+            <path key={path} d={path} />
+          ))}
+        </g>
+      </svg>
+    </span>
+  );
+}
 
 function Emblem({ ink }: { ink: string }) {
   return (

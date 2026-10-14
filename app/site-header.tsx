@@ -1,4 +1,4 @@
-import { MarkWinged } from './mark';
+import { AnvilBirdMark } from './mark';
 
 // Shared by every page. On the home page the section links are in-page
 // anchors; elsewhere they lead back to the home page's sections. Page-to-page
@@ -13,7 +13,7 @@ export default function SiteHeader({
   const section = (id: string) => (home ? `#${id}` : `/#${id}`);
   const brand = (
     <>
-      <MarkWinged />
+      <AnvilBirdMark />
       <span>
         Alberto<span className="brand-sub">Ferreira de Melo Filho</span>
       </span>
